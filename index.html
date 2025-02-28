@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AR.js dengan A-Frame</title>
+
+  <!-- A-Frame Library -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+  <!-- AR.js Library -->
+  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+
+  <!-- MediaPipe Hand Tracking Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      touch-action: none; /* Menonaktifkan pinch zoom */
+    }
+
+    a-scene {
+      width: 100%;
+      height: 100%;
+    }
+
+    a-camera {
+      z-index: 1;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
+
+    <!-- Marker untuk AR.js -->
+    <a-marker preset="hiro">
+      <!-- Model 3D yang akan diputar berdasarkan gerakan tangan -->
+      <a-gltf-model id="rotating-model" src="Model4.glb" position="0 0.5 0" scale="0.5 0.5 0.5"></a-gltf-model>
+    </a-marker>
+
+    <!-- Kamera untuk AR.js -->
+    <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
+
+  </a-scene>
+
+  <script>
+    // Memastikan Hand Tracking dari MediaPipe sudah siap
+    const videoElement = document.createElement('video');
+    const hands = new Hands();
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    
+    hands.onResults(results => {
+      if (results.multiHandLandmarks) {
+        const handLandmarks = results.multiHandLandmarks[0];
+        const thumbTip = handLandmarks[4]; // Titik ujung jempol
+        const indexTip = handLandmarks[8]; // Titik ujung jari telunjuk
+        
+        // Lakukan rotasi objek berdasarkan posisi jari
+        const xRotation = (indexTip.x - thumbTip.x) * 100; // Menghitung rotasi
+        const yRotation = (indexTip.y - thumbTip.y) * 100;
+        
+        // Temukan objek dalam scene dan terapkan rotasi
+        const model = document.querySelector('#rotating-model');
+        if (model) {
+          model.setAttribute('rotation', `${xRotation} ${yRotation} 0`);
+        }
+      }
+    });
+
+    // Memulai hand tracking dengan video
+    async function startHandTracking() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoElement.srcObject = stream;
+      await videoElement.play();
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await hands.send({ image: videoElement });
+        }
+      });
+      camera.start();
+    }
+
+    startHandTracking();
+  </script>
+</body>
+</html>
