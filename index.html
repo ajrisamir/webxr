@@ -49,14 +49,16 @@
   </a-scene>
 
   <script>
-    // Fungsi untuk memulai hand tracking
     async function startHandTracking() {
       const videoElement = document.querySelector('video'); // Menggunakan webcam
-      // Load model hand tracking dengan menggunakan API terbaru
-      const detector = await handPoseDetection.createDetector(handPoseDetection.SupportedModels.MediaPipeHands, {
-        runtime: 'mediapipe',
-        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/mediapipe/solutions/hands/'
-      });
+
+      // Menginisialisasi detektor tangan dengan API terbaru
+      const detector = await handPoseDetection.createDetector(
+        handPoseDetection.SupportedModels.MediaPipeHands, {
+          runtime: 'mediapipe',
+          solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/mediapipe/solutions/hands/'
+        }
+      );
 
       const update = async () => {
         const hands = await detector.estimateHands(videoElement); // Mengestimasi tangan
@@ -80,7 +82,6 @@
       update();
     }
 
-    // Mulai hand tracking saat halaman dimuat
     window.addEventListener('load', startHandTracking);
   </script>
 </body>
