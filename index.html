@@ -59,7 +59,7 @@
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5
     });
-    
+
     hands.onResults(results => {
       if (results.multiHandLandmarks) {
         const handLandmarks = results.multiHandLandmarks[0];
@@ -80,15 +80,22 @@
 
     // Memulai hand tracking dengan video
     async function startHandTracking() {
+      // Mengakses video dari webcam
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoElement.srcObject = stream;
       await videoElement.play();
-      const camera = new Camera(videoElement, {
-        onFrame: async () => {
+      
+      // Mengirim video ke MediaPipe untuk diproses
+      hands.send({ image: videoElement });
+
+      // Mengulangi pemrosesan video
+      videoElement.onplay = async function () {
+        const processFrame = async () => {
           await hands.send({ image: videoElement });
-        }
-      });
-      camera.start();
+          requestAnimationFrame(processFrame);
+        };
+        processFrame();
+      };
     }
 
     startHandTracking();
