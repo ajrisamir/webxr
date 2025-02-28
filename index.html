@@ -52,13 +52,14 @@
     // Fungsi untuk memulai hand tracking
     async function startHandTracking() {
       const videoElement = document.querySelector('video'); // Menggunakan webcam
-      const model = await handPoseDetection.createDetector(handPoseDetection.SupportedModels.MediaPipeHands, {
+      // Load model hand tracking dengan menggunakan API terbaru
+      const detector = await handPoseDetection.createDetector(handPoseDetection.SupportedModels.MediaPipeHands, {
         runtime: 'mediapipe',
         solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/mediapipe/solutions/hands/'
       });
 
       const update = async () => {
-        const hands = await model.estimateHands(videoElement);
+        const hands = await detector.estimateHands(videoElement); // Mengestimasi tangan
 
         if (hands.length > 0) {
           const landmarks = hands[0].landmarks; // Posisi landmark tangan
