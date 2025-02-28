@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan TensorFlow.js Hand Tracking</title>
+  <title>AR.js dengan A-Frame</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -11,78 +11,56 @@
   <!-- AR.js Library -->
   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
 
-  <!-- TensorFlow.js and Hand Pose Detection Model -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
-
   <style>
     body {
       margin: 0;
       overflow: hidden;
       touch-action: none; /* Menonaktifkan pinch zoom */
     }
-
-    a-scene {
-      width: 100%;
-      height: 100%;
-    }
-
-    a-camera {
-      z-index: 1;
-      position: fixed;
-      height: 100%;
-      width: 100%;
-      pointer-events: none;
-    }
   </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
-    <!-- Marker untuk AR.js -->
-    <a-marker preset="hiro">
-      <!-- Objek 3D yang akan ditampilkan pada marker -->
-      <a-gltf-model id="model" src="Model4.glb" position="0 0.5 0" scale="0.5 0.5 0.5"></a-gltf-model>
+<body>
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+
+    <!-- Marker pertama: Hiro -->
+    <a-marker id="marker-hiro" preset="hiro">
+      <a-entity id="model" gltf-model="Model4.glb" position="0 0.5 0" scale="0.5 0.5 0.5"></a-entity>
     </a-marker>
 
-    <!-- Kamera untuk AR.js -->
-    <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
+    <!-- Marker kedua: Kanji untuk memicu rotasi -->
+    <a-marker id="marker-kanji" preset="kanji"></a-marker>
+
+    <a-camera position="0 0 0" fov="80"></a-camera>
   </a-scene>
 
   <script>
-    async function startHandTracking() {
-      const videoElement = document.querySelector('video'); // Menggunakan webcam
+    document.addEventListener("DOMContentLoaded", function() {
+      let model = document.querySelector("#model");
+      let markerHiro = document.querySelector("#marker-hiro");
+      let markerKanji = document.querySelector("#marker-kanji");
+      let isRotating = false;
 
-      // Menginisialisasi detektor tangan dengan API terbaru
-      const detector = await handPoseDetection.createDetector(
-        handPoseDetection.SupportedModels.MediaPipeHands, {
-          runtime: 'mediapipe',
-          solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/mediapipe/solutions/hands/'
+      markerKanji.addEventListener("markerFound", () => {
+        console.log("Marker Kanji ditemukan! Model akan mulai berputar.");
+        isRotating = true;
+      });
+
+      markerKanji.addEventListener("markerLost", () => {
+        console.log("Marker Kanji hilang! Model berhenti berputar.");
+        isRotating = false;
+      });
+
+      function rotateModel() {
+        if (isRotating) {
+          let rotation = model.getAttribute("rotation");
+          rotation.y += 2; // Rotasi bertambah pada sumbu Y
+          model.setAttribute("rotation", rotation);
         }
-      );
+        requestAnimationFrame(rotateModel);
+      }
 
-      const update = async () => {
-        const hands = await detector.estimateHands(videoElement); // Mengestimasi tangan
-
-        if (hands.length > 0) {
-          const landmarks = hands[0].landmarks; // Posisi landmark tangan
-          const wrist = landmarks[0]; // Contoh: Poin pergelangan tangan
-
-          // Tampilkan rotasi berdasarkan landmark tangan (contoh sederhana)
-          const rotationX = wrist[0] * 10; // Contoh rotasi berdasarkan sumbu X
-          const rotationY = wrist[1] * 10; // Contoh rotasi berdasarkan sumbu Y
-
-          // Arahkan objek 3D berdasarkan rotasi tangan
-          const model = document.querySelector('#model');
-          model.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
-        }
-
-        requestAnimationFrame(update); // Lanjutkan update hand tracking
-      };
-
-      update();
-    }
-
-    window.addEventListener('load', startHandTracking);
+      rotateModel();
+    });
   </script>
 </body>
 </html>
