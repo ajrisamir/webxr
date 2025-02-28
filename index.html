@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan A-Frame</title>
+  <title>AR.js dengan A-Frame dan Multi Image Tracking</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -17,49 +17,60 @@
       overflow: hidden;
       touch-action: none; /* Menonaktifkan pinch zoom */
     }
+
+    a-scene {
+      width: 100%;
+      height: 100%;
+    }
+
+    a-camera {
+      z-index: 1;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
   </style>
 </head>
-<body>
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
 
-    <!-- Marker pertama: Hiro -->
-    <a-marker id="marker-hiro" preset="hiro">
-      <a-entity id="model" gltf-model="Model4.glb" position="0 0.5 0" scale="0.5 0.5 0.5"></a-entity>
+    <!-- Marker untuk menampilkan objek 3D -->
+    <a-marker type="pattern" url="path-to-your-custom-marker.patt">
+      <a-gltf-model src="Model4.glb" id="model" position="0 0.5 0" scale="0.5 0.5 0.5"></a-gltf-model>
     </a-marker>
 
-    <!-- Marker kedua: Kanji untuk memicu rotasi -->
-    <a-marker id="marker-kanji" preset="kanji"></a-marker>
+    <!-- Marker Hiro untuk rotasi objek -->
+    <a-marker preset="hiro" id="hiroMarker">
+      <a-entity id="rotatingModel" position="0 0.5 0" scale="0.5 0.5 0.5">
+        <a-gltf-model src="Model4.glb"></a-gltf-model>
+      </a-entity>
+    </a-marker>
 
-    <a-camera position="0 0 0" fov="80"></a-camera>
+    <!-- Kamera untuk AR.js -->
+    <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
+
   </a-scene>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      let model = document.querySelector("#model");
-      let markerHiro = document.querySelector("#marker-hiro");
-      let markerKanji = document.querySelector("#marker-kanji");
-      let isRotating = false;
+    // Mengambil referensi ke model yang ingin diputar
+    const rotatingModel = document.getElementById('rotatingModel');
 
-      markerKanji.addEventListener("markerFound", () => {
-        console.log("Marker Kanji ditemukan! Model akan mulai berputar.");
-        isRotating = true;
+    // Fungsi untuk merotasi model
+    function rotateModel() {
+      rotatingModel.object3D.rotation.y += 0.01; // Rotasi model pada sumbu Y
+    }
+
+    // Menambahkan event listener pada marker Hiro untuk rotasi
+    const hiroMarker = document.getElementById('hiroMarker');
+    hiroMarker.addEventListener('markerFound', function () {
+      // Putar model jika marker Hiro ditemukan
+      const rotationInterval = setInterval(rotateModel, 16); // Setiap frame
+
+      // Hentikan rotasi saat marker Hiro hilang
+      hiroMarker.addEventListener('markerLost', function () {
+        clearInterval(rotationInterval);
       });
-
-      markerKanji.addEventListener("markerLost", () => {
-        console.log("Marker Kanji hilang! Model berhenti berputar.");
-        isRotating = false;
-      });
-
-      function rotateModel() {
-        if (isRotating) {
-          let rotation = model.getAttribute("rotation");
-          rotation.y += 2; // Rotasi bertambah pada sumbu Y
-          model.setAttribute("rotation", rotation);
-        }
-        requestAnimationFrame(rotateModel);
-      }
-
-      rotateModel();
     });
   </script>
 </body>
