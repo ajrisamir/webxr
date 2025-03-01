@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AR.js dengan Fisika</title>
 
   <!-- A-Frame & AR.js -->
@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
 
   <style>
-    body { margin: 0; overflow: hidden; }
+    body { margin: 0; overflow: hidden; touch-action: none; }
     a-scene { width: 100%; height: 100%; }
   </style>
 </head>
@@ -36,7 +36,7 @@
     </a-marker>
 
     <!-- Kamera AR -->
-    <a-camera position="0 0 0"></a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
   </a-scene>
 
   <script>
