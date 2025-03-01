@@ -36,16 +36,14 @@
   <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
 
     <!-- Marker untuk menampilkan objek 3D -->
-    <a-marker type="pattern" src="marker.patt">
-      <a-gltf-model src="Model4.glb" id="model" position="0 0.5 0" scale="0.5 0.5 0.5"></a-gltf-model>
-    </a-marker>
-
-    <!-- Marker Hiro untuk rotasi objek -->
-    <a-marker preset="hiro" id="hiroMarker">
-      <a-entity id="rotatingModel" position="0 0.5 0" scale="0.5 0.5 0.5">
+    <a-marker type="pattern" url="marker.patt" id="customMarker">
+      <a-entity id="modelEntity" position="0 0.5 0" scale="0.5 0.5 0.5">
         <a-gltf-model src="Model4.glb"></a-gltf-model>
       </a-entity>
     </a-marker>
+
+    <!-- Marker Hiro untuk rotasi objek -->
+    <a-marker preset="hiro" id="hiroMarker"></a-marker>
 
     <!-- Kamera untuk AR.js -->
     <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
@@ -54,24 +52,38 @@
 
   <script>
     // Mengambil referensi ke model yang ingin diputar
-    const rotatingModel = document.getElementById('rotatingModel');
+    const modelEntity = document.getElementById('modelEntity');
+    let isRotating = false; // Menandakan apakah rotasi sedang aktif
 
     // Fungsi untuk merotasi model
     function rotateModel() {
-      rotatingModel.object3D.rotation.y += 0.01; // Rotasi model pada sumbu Y
+      if (modelEntity) {
+        modelEntity.object3D.rotation.y += 0.01; // Rotasi model pada sumbu Y
+      }
     }
 
     // Menambahkan event listener pada marker Hiro untuk rotasi
     const hiroMarker = document.getElementById('hiroMarker');
     hiroMarker.addEventListener('markerFound', function () {
-      // Putar model jika marker Hiro ditemukan
-      const rotationInterval = setInterval(rotateModel, 16); // Setiap frame
-
-      // Hentikan rotasi saat marker Hiro hilang
-      hiroMarker.addEventListener('markerLost', function () {
-        clearInterval(rotationInterval);
-      });
+      // Mulai rotasi saat marker Hiro ditemukan
+      isRotating = true;
     });
+
+    // Hentikan rotasi saat marker Hiro hilang
+    hiroMarker.addEventListener('markerLost', function () {
+      isRotating = false;
+    });
+
+    // Loop rotasi jika aktif
+    function animate() {
+      if (isRotating) {
+        rotateModel();
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Mulai animasi
+    animate();
   </script>
 </body>
 </html>
