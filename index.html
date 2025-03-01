@@ -2,102 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan A-Frame dan Multi Image Tracking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR.js dengan Fisika</title>
 
-  <!-- A-Frame Library -->
+  <!-- A-Frame & AR.js -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-
-  <!-- AR.js Library -->
   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+  
+  <!-- Cannon.js untuk Fisika -->
+  <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      touch-action: none; /* Menonaktifkan pinch zoom */
-    }
-
-    a-scene {
-      width: 100%;
-      height: 100%;
-    }
-
-    a-camera {
-      z-index: 1;
-      position: fixed;
-      height: 100%;
-      width: 100%;
-      pointer-events: none;
-    }
+    body { margin: 0; overflow: hidden; }
+    a-scene { width: 100%; height: 100%; }
   </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
-
-    <!-- Marker untuk menampilkan objek 3D -->
-    <a-marker type="pattern" url="marker.patt" id="customMarker">
-      <a-entity id="modelEntity" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
+<body>
+  <a-scene embedded arjs="sourceType: webcam;">
+    
+    <!-- Marker Custom untuk Bola -->
+    <a-marker type="pattern" url="path-to-your-custom-marker.patt" id="ballMarker">
+      <a-entity id="ball" geometry="primitive: sphere; radius: 0.1" material="color: red"
+        dynamic-body="mass: 1; restitution: 0.8;" position="0 0.2 0">
       </a-entity>
     </a-marker>
 
-    <!-- Marker Hiro untuk kontrol gerakan -->
-    <a-marker preset="hiro" id="hiroMarker"></a-marker>
+    <!-- Marker Hiro untuk Paddle -->
+    <a-marker preset="hiro" id="paddleMarker">
+      <a-entity id="paddle" geometry="primitive: box; width: 0.3; height: 0.02; depth: 0.1" 
+        material="color: blue" static-body position="0 0.1 0">
+      </a-entity>
+    </a-marker>
 
-    <!-- Kamera untuk AR.js -->
-    <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
-
+    <!-- Kamera AR -->
+    <a-camera position="0 0 0"></a-camera>
   </a-scene>
 
   <script>
-    const modelEntity = document.getElementById('modelEntity');
-    const hiroMarker = document.getElementById('hiroMarker');
-    let lastMarkerPosition = { x: 0, y: 0 }; // Posisi marker Hiro sebelumnya
-    let isMarkerDetected = false; // Menandakan apakah marker Hiro terdeteksi
+    document.addEventListener('DOMContentLoaded', () => {
+      const ball = document.querySelector('#ball');
+      const paddle = document.querySelector('#paddle');
 
-    // Fungsi untuk menghitung perubahan posisi dan melakukan aksi
-    function handleMarkerMovement() {
-      const markerPosition = hiroMarker.object3D.position;
-      
-      if (isMarkerDetected) {
-        const deltaX = markerPosition.x - lastMarkerPosition.x; // Perubahan posisi sumbu X (kiri/kanan)
-        const deltaY = markerPosition.y - lastMarkerPosition.y; // Perubahan posisi sumbu Y (atas/bawah)
+      // Pastikan marker Hiro terdeteksi sebelum menjalankan logika
+      document.querySelector('#paddleMarker').addEventListener('markerFound', () => {
+        paddle.setAttribute('position', '0 0.1 0');
+      });
 
-        // Mengubah rotasi objek berdasarkan sumbu X (kiri/kanan)
-        modelEntity.object3D.rotation.y += deltaX * 0.1; // Putar objek berdasarkan gerakan kiri/kanan
-        
-        // Mengubah skala objek berdasarkan sumbu Y (atas/bawah)
-        const newScale = modelEntity.object3D.scale.x + deltaY * 0.1; // Perbesar/Mengecilkan objek
-        modelEntity.object3D.scale.set(newScale, newScale, newScale);
-
-        // Update posisi marker terakhir
-        lastMarkerPosition.x = markerPosition.x;
-        lastMarkerPosition.y = markerPosition.y;
-      }
-    }
-
-    // Ketika marker Hiro ditemukan, mulai melacak pergerakan
-    hiroMarker.addEventListener('markerFound', function() {
-      isMarkerDetected = true;
-      lastMarkerPosition.x = hiroMarker.object3D.position.x;
-      lastMarkerPosition.y = hiroMarker.object3D.position.y;
+      // Pastikan bola berada dalam gravitasi setelah marker terdeteksi
+      document.querySelector('#ballMarker').addEventListener('markerFound', () => {
+        ball.setAttribute('dynamic-body', 'mass: 1; restitution: 0.8;');
+      });
     });
-
-    // Ketika marker Hiro hilang, hentikan pergerakan
-    hiroMarker.addEventListener('markerLost', function() {
-      isMarkerDetected = false;
-    });
-
-    // Animasi untuk melacak pergerakan marker secara terus-menerus
-    function animate() {
-      if (isMarkerDetected) {
-        handleMarkerMovement();
-      }
-      requestAnimationFrame(animate);
-    }
-
-    animate(); // Mulai animasi
   </script>
 </body>
 </html>
