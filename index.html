@@ -9,8 +9,8 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
   
-  <!-- Cannon.js untuk Fisika -->
-  <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
+  <!-- Cannon.js yang kompatibel -->
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/cannon-es@0.18.0/dist/cannon-es.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
 
   <style>
@@ -19,10 +19,10 @@
   </style>
 </head>
 <body>
-  <a-scene embedded arjs="sourceType: webcam;">
+  <a-scene embedded arjs="sourceType: webcam;" physics="debug: false">
     
     <!-- Marker Custom untuk Bola -->
-    <a-marker type="pattern" url="marker.patt" id="ballMarker">
+    <a-marker type="pattern" url="path-to-your-custom-marker.patt" id="ballMarker">
       <a-entity id="ball" geometry="primitive: sphere; radius: 0.1" material="color: red"
         dynamic-body="mass: 1; restitution: 0.8;" position="0 0.2 0">
       </a-entity>
