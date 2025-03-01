@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan A-Frame</title>
+  <title>AR.js dengan A-Frame dan Multi Image Tracking</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 
   <!-- AR.js Library -->
   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
 
   <style>
     body {
@@ -37,15 +35,55 @@
 <body style="margin: 0; overflow: hidden;">
   <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
 
-    <!-- Marker untuk AR.js -->
-    <a-marker preset="hiro">
-      <!-- Objek 3D yang akan ditampilkan pada marker -->
-      <a-gltf-model src="Model4.glb" position="0 0.5 0" scale="0.5 0.5 0.5"></a-gltf-model>
+    <!-- Marker untuk menampilkan objek 3D -->
+    <a-marker type="pattern" url="marker.patt" id="customMarker">
+      <a-entity id="modelEntity" position="0 0.5 0" scale="0.5 0.5 0.5">
+        <a-gltf-model src="Model4.glb"></a-gltf-model>
+      </a-entity>
     </a-marker>
+
+    <!-- Marker Hiro untuk rotasi objek -->
+    <a-marker preset="hiro" id="hiroMarker"></a-marker>
 
     <!-- Kamera untuk AR.js -->
     <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
 
   </a-scene>
+
+  <script>
+    // Mengambil referensi ke model yang ingin diputar
+    const modelEntity = document.getElementById('modelEntity');
+    let isRotating = false; // Menandakan apakah rotasi sedang aktif
+
+    // Fungsi untuk merotasi model
+    function rotateModel() {
+      if (modelEntity) {
+        modelEntity.object3D.rotation.y += 0.01; // Rotasi model pada sumbu Y
+      }
+    }
+
+    // Menambahkan event listener pada marker Hiro untuk rotasi
+    const hiroMarker = document.getElementById('hiroMarker');
+    hiroMarker.addEventListener('markerFound', function () {
+      // Mulai rotasi saat marker Hiro ditemukan
+      isRotating = true;
+    });
+
+    // Hentikan rotasi saat marker Hiro hilang
+    hiroMarker.addEventListener('markerLost', function () {
+      isRotating = false;
+    });
+
+    // Loop rotasi jika aktif
+    function animate() {
+      if (isRotating) {
+        rotateModel();
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Mulai animasi
+    animate();
+  </script>
 </body>
 </html>
