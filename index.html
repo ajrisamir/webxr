@@ -17,23 +17,16 @@
   </style>
 </head>
 <body>
-  <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false" gps-camera="gpsMinDistance: 5;">
-    
-    <!-- Objek 3D yang muncul berdasarkan koordinat GPS -->
-    <a-entity gps-entity-place="latitude: 4,9390781; longitude: 114,9451212"
-              gltf-model="./Model4.glb" 
-              scale="1 1 1" 
-              position="0 0 0">
-    </a-entity>
+  <a-scene>
+  <a-entity camera>
+    <a-entity id="cursor" cursor="fuse: true; fuseTimeout: 500;" raycaster="objects: .clickable" position="0 0 -1"></a-entity>
+  </a-entity>
 
-    <!-- Kamera GPS -->
-    <a-camera gps-camera rotation-reader></a-camera>
-  </a-scene>
+  <!-- Objek yang dapat diklik -->
+  <a-entity class="clickable" geometry="primitive: box" material="color: blue" position="0 0 -5"></a-entity>
 
-  <script>
-    window.onload = function() {
-      alert("Pastikan GPS Anda aktif! Jika tidak, objek tidak akan muncul.");
-    };
-  </script>
+  <!-- Objek 3D yang akan ditempatkan berdasarkan interaksi -->
+  <a-entity id="model" gltf-model="Model4.glb" scale="1 1 1" position="0 0 -10"></a-entity>
+</a-scene>
 </body>
 </html>
