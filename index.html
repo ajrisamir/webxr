@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan Posisi Terkunci</title>
+  <title>AR.js dengan Posisi Terkunci dan Marker Hiro</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -35,8 +35,8 @@
 <body style="margin: 0; overflow: hidden;">
   <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
 
-    <!-- Marker untuk menampilkan objek 3D berdasarkan marker.patt -->
-    <a-marker type="pattern" url="marker.patt" id="marker1">
+    <!-- Marker Hiro untuk menampilkan objek 3D -->
+    <a-marker preset="hiro" id="marker1">
       <a-entity id="modelEntity1" position="0 0.5 0" scale="0.5 0.5 0.5">
         <a-gltf-model src="Model1.glb"></a-gltf-model>
       </a-entity>
