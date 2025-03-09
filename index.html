@@ -4,16 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pose Tracking with Model on Hand</title>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.3.1626/pose.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.7.0"></script>
+
+  <!-- Import TensorFlow.js & Pose Detection -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+  <!-- Import Three.js for 3D rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <style>
-    body { margin: 0; }
+    body { margin: 0; overflow: hidden; }
+    video { 
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
     canvas { display: block; }
   </style>
 </head>
 <body>
-  <video id="video" width="640" height="480" style="position: absolute; top: 0; left: 0;" autoplay></video>
+  <video id="video" autoplay playsinline></video>
   <script src="app.js"></script>
 </body>
 </html>
