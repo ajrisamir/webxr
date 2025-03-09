@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan A-Frame dan Deteksi Warna Hijau</title>
+  <title>AR.js dengan Posisi Terkunci</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -34,89 +34,58 @@
 </head>
 <body style="margin: 0; overflow: hidden;">
   <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
+
+    <!-- Marker untuk menampilkan objek 3D berdasarkan marker.patt -->
+    <a-marker type="pattern" url="marker.patt" id="marker1">
+      <a-entity id="modelEntity1" position="0 0.5 0" scale="0.5 0.5 0.5">
+        <a-gltf-model src="Model1.glb"></a-gltf-model>
+      </a-entity>
+    </a-marker>
+
     <!-- Kamera untuk AR.js -->
     <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
 
-    <!-- Marker hijau yang akan muncul saat warna hijau terdeteksi -->
-    <a-entity id="modelEntity" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
-      <a-gltf-model src="Model4.glb"></a-gltf-model>
-    </a-entity>
   </a-scene>
 
   <script>
-    const modelEntity = document.getElementById('modelEntity');
-    const camera = document.querySelector('a-camera');
+    const modelEntity1 = document.getElementById('modelEntity1');
+    const marker1 = document.getElementById('marker1');
+    let savedPosition = null; // Variabel untuk menyimpan posisi objek ketika marker terdeteksi
 
-    // Canvas untuk deteksi warna hijau
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    let isModelVisible = false;
-
-    // Fungsi untuk mendeteksi warna hijau
-    function detectGreen() {
-      const video = document.querySelector('video');
-      if (!video) return;
-
-      // Menyusun ulang ukuran canvas sesuai dengan ukuran video (kamera)
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Mengambil data piksel dari canvas
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const pixels = imageData.data;
-
-      let greenDetected = false;
-      let greenX = 0;
-      let greenY = 0;
-      let greenCount = 0; // Untuk menghitung jumlah piksel hijau
-
-      // Loop untuk mencari warna hijau (RGB: cukup besar nilai G dan kecil R/B)
-      for (let i = 0; i < pixels.length; i += 4) {
-        const r = pixels[i];     // Merah
-        const g = pixels[i + 1]; // Hijau
-        const b = pixels[i + 2]; // Biru
-
-        // Menambahkan log debugging untuk memverifikasi apakah warna hijau terdeteksi
-        if (g > 100 && r < 50 && b < 50) {
-          // Deteksi warna hijau
-          greenDetected = true;
-          const x = (i / 4) % canvas.width;
-          const y = Math.floor((i / 4) / canvas.width);
-          greenX += x;
-          greenY += y;
-          greenCount++;
-        }
-      }
-
-      if (greenDetected && greenCount > 100) { // Pastikan cukup banyak piksel hijau terdeteksi
-        const avgX = greenX / greenCount;
-        const avgY = greenY / greenCount;
-
-        // Menyelaraskan posisi model dengan deteksi posisi hijau
-        modelEntity.setAttribute('position', `${avgX / 100} ${avgY / 100} 0`);
-
-        // Menampilkan model saat warna hijau terdeteksi
-        if (!isModelVisible) {
-          modelEntity.setAttribute('visible', 'true');
-          isModelVisible = true;
-        }
-      } else {
-        if (isModelVisible) {
-          // Menyembunyikan model jika tidak ada warna hijau
-          modelEntity.setAttribute('visible', 'false');
-          isModelVisible = false;
-        }
+    // Fungsi untuk menyimpan posisi objek ketika marker ditemukan
+    function savePosition() {
+      if (savedPosition === null) {
+        savedPosition = modelEntity1.object3D.position.clone(); // Simpan posisi dunia saat marker ditemukan
       }
     }
 
-    // Menjalankan deteksi warna hijau setiap frame
+    // Fungsi untuk membuat objek tetap pada posisi yang tersimpan
+    function keepModelAtSavedPosition() {
+      if (savedPosition !== null) {
+        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang tersimpan ke objek
+      }
+    }
+
+    // Ketika marker ditemukan, simpan posisi objek
+    marker1.addEventListener('markerFound', function() {
+      savePosition();
+    });
+
+    // Ketika marker hilang, pastikan objek tetap pada posisi yang tersimpan
+    marker1.addEventListener('markerLost', function() {
+      keepModelAtSavedPosition();
+    });
+
+    // Animasi untuk melacak pergerakan marker secara terus-menerus
     function animate() {
-      detectGreen();
+      // Pastikan objek tetap pada posisi yang tersimpan jika marker hilang
+      if (savedPosition !== null) {
+        keepModelAtSavedPosition();
+      }
       requestAnimationFrame(animate);
     }
 
-    animate();
+    animate(); // Mulai animasi
   </script>
 </body>
 </html>
