@@ -1,67 +1,63 @@
+// Setup video stream
 const videoElement = document.getElementById('video');
-const startARButton = document.getElementById('startARButton');
 
-// Fungsi untuk mendapatkan akses ke kamera
+// Setup MediaPipe Pose
+const pose = new Pose({
+  locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.3.1626/${file}`;
+  }
+});
+
+// Setup TensorFlow.js
 async function setupCamera() {
-  const video = videoElement;
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: true
+    video: { facingMode: 'user' }
   });
-  video.srcObject = stream;
+  videoElement.srcObject = stream;
   await new Promise((resolve) => {
-    video.onloadedmetadata = () => {
-      resolve(video);
-    };
+    videoElement.onloadedmetadata = () => resolve();
   });
-  video.play();
-  return video;
+  videoElement.play();
 }
 
-// Fungsi untuk mendeteksi pose menggunakan MediaPipe Pose
-async function detectPose(video) {
-  // Memilih model pose yang tepat (MediaPipePose) dan runtime 'tfjs'
-  const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MediaPipePose, {
-    runtime: 'tfjs', // Gunakan TensorFlow.js
-    modelType: 'full' // Gunakan model lengkap
-  });
+// Setup Three.js scene for rendering 3D model
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-  const poses = await detector.estimatePoses(video);
+// Add a simple cube as the 3D model for demonstration
+const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+camera.position.z = 1;
 
-  // Untuk testing, kita log koordinat titik pose pertama
-  if (poses.length > 0) {
-    const keypoints = poses[0].keypoints;
-    console.log(keypoints);
+async function detectPose() {
+  const poseResults = await pose.send({ image: videoElement });
+  if (poseResults && poseResults.poseLandmarks) {
+    const landmarks = poseResults.poseLandmarks;
+    
+    // Get coordinates of the wrist (index 15 and 16)
+    const wristLeft = landmarks[15];
+    const wristRight = landmarks[16];
+
+    // Translate coordinates to scene for rendering
+    // Scaling and translating coordinates to match 3D space
+    const scale = 1.5; // Adjust this factor to position the model
+    cube.position.x = (wristRight.x - 0.5) * scale;
+    cube.position.y = -(wristRight.y - 0.5) * scale; // Flip Y axis
   }
 
-  // Panggil lagi untuk mendeteksi pose secara berkelanjutan
-  requestAnimationFrame(() => detectPose(video));
+  // Render the scene
+  renderer.render(scene, camera);
+  requestAnimationFrame(detectPose); // Continuously call detectPose
 }
 
-// Fungsi utama untuk setup
 async function main() {
-  const video = await setupCamera();
-  detectPose(video);
+  await setupCamera();
+  pose.onResults(detectPose);
 }
 
 main();
-
-// Fungsi untuk memulai sesi AR
-async function startARSession() {
-  if ('xr' in navigator) {
-    const session = await navigator.xr.requestSession('immersive-ar', {
-      requiredFeatures: ['hit-test']
-    });
-
-    // Pengaturan untuk sesi AR
-    const referenceSpace = await session.requestReferenceSpace('local');
-    const viewerPose = await session.getViewerPose(referenceSpace);
-
-    // Sesi AR aktif
-    session.addEventListener('end', () => console.log('AR session ended'));
-  } else {
-    console.log('WebXR tidak didukung pada perangkat ini');
-  }
-}
-
-// Panggil fungsi untuk memulai sesi AR setelah klik tombol
-startARButton.addEventListener('click', startARSession);
