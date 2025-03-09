@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function setupCamera() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user" }, // Gunakan kamera depan
+                video: { facingMode: "environment" }, // Gunakan kamera depan
             });
             videoElement.srcObject = stream;
             return new Promise((resolve) => {
