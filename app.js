@@ -1,4 +1,5 @@
 const videoElement = document.getElementById('video');
+const startARButton = document.getElementById('startARButton');
 
 // Fungsi untuk mendapatkan akses ke kamera
 async function setupCamera() {
@@ -57,5 +58,5 @@ async function startARSession() {
   }
 }
 
-// Panggil fungsi untuk memulai sesi AR
-startARSession();
+// Panggil fungsi untuk memulai sesi AR setelah klik tombol
+startARButton.addEventListener('click', startARSession);
