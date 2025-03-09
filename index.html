@@ -2,145 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js - Simpan Posisi Model</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-  <style>
-    body { margin: 0; overflow: hidden; touch-action: none; }
-    #saveButton {
-      position: absolute;
-      top: 20px; left: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #000; color: #fff;
-      border: none; cursor: pointer;
-      display: none;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web AR with Pose Estimation</title>
+  <!-- Import TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <!-- Import TensorFlow Pose Detection Model -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+  <!-- Import MediaPipe Pose -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
 </head>
 <body>
-  <a-scene embedded arjs>
-    <a-marker preset="hiro" id="marker">
-      <a-entity id="model" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model1.glb"></a-gltf-model>
-      </a-entity>
-    </a-marker>
-    <a-entity id="persistentModel" visible="false"></a-entity>
-    <a-camera position="0 0 0"></a-camera>
-  </a-scene>
-  <button id="saveButton">Simpan Posisi</button>
-
-  <script>
-    const marker = document.getElementById('marker');
-    const model = document.getElementById('model');
-    const persistentModel = document.getElementById('persistentModel');
-    const saveButton = document.getElementById('saveButton');
-    let isPositionSaved = false;
-
-    marker.addEventListener('markerFound', function() {
-      if (!isPositionSaved) {
-        model.setAttribute('visible', 'true');
-        saveButton.style.display = 'block';
-      }
-    });
-
-    marker.addEventListener('markerLost', function() {
-      if (!isPositionSaved) {
-        model.setAttribute('visible', 'false');
-      }
-    });
-
-    saveButton.addEventListener('click', function() {
-      const worldPos = new THREE.Vector3();
-      model.object3D.getWorldPosition(worldPos);
-      const worldQuat = new THREE.Quaternion();
-      model.object3D.getWorldQuaternion(worldQuat);
-      const worldScale = model.object3D.scale.clone();
-      
-      persistentModel.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
-      persistentModel.setAttribute('rotation', `${THREE.MathUtils.radToDeg(worldQuat.x)} ${THREE.MathUtils.radToDeg(worldQuat.y)} ${THREE.MathUtils.radToDeg(worldQuat.z)}`);
-      persistentModel.setAttribute('scale', `${worldScale.x} ${worldScale.y} ${worldScale.z}`);
-      persistentModel.innerHTML = model.innerHTML;
-      persistentModel.setAttribute('visible', 'true');
-      
-      marker.parentNode.removeChild(marker);
-      saveButton.style.display = 'none';
-      isPositionSaved = true;
-    });
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js - Simpan Posisi Model</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-  <style>
-    body { margin: 0; overflow: hidden; touch-action: none; }
-    #saveButton {
-      position: absolute;
-      top: 20px; left: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #000; color: #fff;
-      border: none; cursor: pointer;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <a-scene embedded arjs>
-    <a-marker preset="hiro" id="marker">
-      <a-entity id="model" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
-      </a-entity>
-    </a-marker>
-    <a-entity id="persistentModel" visible="false"></a-entity>
-    <a-camera position="0 0 0"></a-camera>
-  </a-scene>
-  <button id="saveButton">Simpan Posisi</button>
-
-  <script>
-    const marker = document.getElementById('marker');
-    const model = document.getElementById('model');
-    const persistentModel = document.getElementById('persistentModel');
-    const saveButton = document.getElementById('saveButton');
-    let isPositionSaved = false;
-
-    marker.addEventListener('markerFound', function() {
-      if (!isPositionSaved) {
-        model.setAttribute('visible', 'true');
-        saveButton.style.display = 'block';
-      }
-    });
-
-    marker.addEventListener('markerLost', function() {
-      if (!isPositionSaved) {
-        model.setAttribute('visible', 'false');
-      }
-    });
-
-    saveButton.addEventListener('click', function() {
-      const worldPos = new THREE.Vector3();
-      model.object3D.getWorldPosition(worldPos);
-      const worldQuat = new THREE.Quaternion();
-      model.object3D.getWorldQuaternion(worldQuat);
-      const worldScale = model.object3D.scale.clone();
-      
-      persistentModel.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
-      persistentModel.setAttribute('rotation', `${THREE.MathUtils.radToDeg(worldQuat.x)} ${THREE.MathUtils.radToDeg(worldQuat.y)} ${THREE.MathUtils.radToDeg(worldQuat.z)}`);
-      persistentModel.setAttribute('scale', `${worldScale.x} ${worldScale.y} ${worldScale.z}`);
-      persistentModel.innerHTML = model.innerHTML;
-      persistentModel.setAttribute('visible', 'true');
-      
-      marker.parentNode.removeChild(marker);
-      saveButton.style.display = 'none';
-      isPositionSaved = true;
-    });
-  </script>
+  <h1>Web AR with Pose Estimation</h1>
+  
+  <!-- Video element untuk menampilkan webcam -->
+  <video id="video" autoplay width="640" height="480"></video>
+  
+  <!-- Import file JavaScript utama -->
+  <script src="app.js"></script>
 </body>
 </html>
