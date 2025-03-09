@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function setupCamera() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user" },
+                video: { facingMode: "user" }, // Gunakan kamera depan
             });
             videoElement.srcObject = stream;
             return new Promise((resolve) => {
@@ -19,12 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("Gagal mengakses kamera:", error);
         }
-    }
-
-    // Validasi poseDetection sebelum digunakan
-    if (typeof poseDetection === "undefined") {
-        console.error("poseDetection tidak terdefinisi. Pastikan library sudah dimuat dengan benar.");
-        return;
     }
 
     // Load Pose Detector
@@ -42,15 +36,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true });
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // Membalik orientasi kamera depan
+    renderer.domElement.style.transform = "scaleX(-1)"; 
+
     // Model 3D (Kubus Sederhana)
     const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
     camera.position.z = 1;
+
+    // Debugging Log
+    console.log("📢 Inisialisasi selesai. Menunggu deteksi pose...");
 
     // Fungsi deteksi pose
     async function detectPose(detector) {
@@ -60,20 +61,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const poses = await detector.estimatePoses(videoElement, {
-            flipHorizontal: false,
+            flipHorizontal: true, // Mirror agar sesuai dengan kamera depan
         });
 
         if (poses.length > 0 && poses[0].keypoints) {
             const keypoints = poses[0].keypoints;
 
+            // Debugging: Tampilkan semua keypoints di console
+            console.log("🔹 Keypoints:", keypoints);
+
             // Mendapatkan koordinat tangan kanan (wrist)
             const wristRight = keypoints.find(kp => kp.name === "right_wrist");
 
             if (wristRight) {
-                const scale = 2.5; // Sesuaikan skala
+                console.log("📍 Tangan kanan terdeteksi di:", wristRight.x, wristRight.y);
+
+                // Mengubah koordinat agar sesuai dengan Three.js
+                const scale = 2.5;
                 cube.position.x = (wristRight.x / videoElement.videoWidth - 0.5) * scale;
                 cube.position.y = -(wristRight.y / videoElement.videoHeight - 0.5) * scale;
             }
+        } else {
+            console.warn("⚠️ Tidak ada pose terdeteksi.");
         }
 
         renderer.render(scene, camera);
@@ -105,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function setupCamera() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user" },
+                video: { facingMode: "user" }, // Gunakan kamera depan
             });
             videoElement.srcObject = stream;
             return new Promise((resolve) => {
@@ -114,12 +123,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("Gagal mengakses kamera:", error);
         }
-    }
-
-    // Validasi poseDetection sebelum digunakan
-    if (typeof poseDetection === "undefined") {
-        console.error("poseDetection tidak terdefinisi. Pastikan library sudah dimuat dengan benar.");
-        return;
     }
 
     // Load Pose Detector
@@ -137,15 +140,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true });
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // Membalik orientasi kamera depan
+    renderer.domElement.style.transform = "scaleX(-1)"; 
+
     // Model 3D (Kubus Sederhana)
     const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
     camera.position.z = 1;
+
+    // Debugging Log
+    console.log("📢 Inisialisasi selesai. Menunggu deteksi pose...");
 
     // Fungsi deteksi pose
     async function detectPose(detector) {
@@ -155,20 +165,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const poses = await detector.estimatePoses(videoElement, {
-            flipHorizontal: false,
+            flipHorizontal: true, // Mirror agar sesuai dengan kamera depan
         });
 
         if (poses.length > 0 && poses[0].keypoints) {
             const keypoints = poses[0].keypoints;
 
+            // Debugging: Tampilkan semua keypoints di console
+            console.log("🔹 Keypoints:", keypoints);
+
             // Mendapatkan koordinat tangan kanan (wrist)
             const wristRight = keypoints.find(kp => kp.name === "right_wrist");
 
             if (wristRight) {
-                const scale = 2.5; // Sesuaikan skala
+                console.log("📍 Tangan kanan terdeteksi di:", wristRight.x, wristRight.y);
+
+                // Mengubah koordinat agar sesuai dengan Three.js
+                const scale = 2.5;
                 cube.position.x = (wristRight.x / videoElement.videoWidth - 0.5) * scale;
                 cube.position.y = -(wristRight.y / videoElement.videoHeight - 0.5) * scale;
             }
+        } else {
+            console.warn("⚠️ Tidak ada pose terdeteksi.");
         }
 
         renderer.render(scene, camera);
