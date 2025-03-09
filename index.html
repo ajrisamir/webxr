@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan Posisi Terkunci dan Marker Hiro</title>
+  <title>AR.js dengan Posisi Terkunci dan Tombol Menyimpan Posisi</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -30,6 +30,19 @@
       width: 100%;
       pointer-events: none;
     }
+
+    /* Tombol untuk menyimpan posisi */
+    #saveButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 10px;
+      border: none;
+      display: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
@@ -47,34 +60,42 @@
 
   </a-scene>
 
+  <!-- Tombol untuk menyimpan posisi model -->
+  <button id="saveButton">Simpan Posisi</button>
+
   <script>
     const modelEntity1 = document.getElementById('modelEntity1');
     const marker1 = document.getElementById('marker1');
-    let savedPosition = null; // Variabel untuk menyimpan posisi objek ketika marker terdeteksi
+    const saveButton = document.getElementById('saveButton');
+    let savedPosition = null; // Variabel untuk menyimpan posisi objek saat marker terdeteksi
 
-    // Fungsi untuk menyimpan posisi objek ketika marker ditemukan
+    // Fungsi untuk menyimpan posisi objek ketika tombol diklik
     function savePosition() {
-      if (savedPosition === null) {
-        savedPosition = modelEntity1.object3D.position.clone(); // Simpan posisi dunia saat marker ditemukan
-      }
+      savedPosition = modelEntity1.object3D.position.clone(); // Simpan posisi dunia saat tombol diklik
+      alert("Posisi model berhasil disimpan!");
     }
 
-    // Fungsi untuk memastikan objek tetap pada posisi yang tersimpan
+    // Fungsi untuk menjaga objek tetap pada posisi yang disimpan
     function keepModelAtSavedPosition() {
       if (savedPosition !== null) {
-        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang tersimpan ke objek
+        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang disimpan ke objek
       }
     }
 
-    // Ketika marker ditemukan, simpan posisi objek
+    // Ketika marker ditemukan, tampilkan tombol untuk menyimpan posisi
     marker1.addEventListener('markerFound', function() {
-      savePosition();
+      saveButton.style.display = 'block'; // Tampilkan tombol untuk menyimpan posisi
     });
 
-    // Ketika marker hilang, pastikan objek tetap pada posisi yang tersimpan
+    // Ketika marker hilang, pastikan objek tetap berada di posisi yang tersimpan
     marker1.addEventListener('markerLost', function() {
-      // Jangan hapus objek, tetap pada posisi yang disimpan
-      keepModelAtSavedPosition();
+      saveButton.style.display = 'none'; // Sembunyikan tombol saat marker hilang
+      keepModelAtSavedPosition(); // Tetap posisi model yang sudah disimpan
+    });
+
+    // Ketika tombol diklik, simpan posisi model
+    saveButton.addEventListener('click', function() {
+      savePosition();
     });
 
     // Animasi untuk memastikan objek tetap berada di posisi yang tersimpan meskipun marker hilang
