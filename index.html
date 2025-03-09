@@ -17,11 +17,11 @@
   </style>
 </head>
 <body>
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;" vr-mode-ui="enabled: false" gps-camera="gpsMinDistance: 5;">
+  <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false" gps-camera="gpsMinDistance: 5;">
     
     <!-- Objek 3D yang muncul berdasarkan koordinat GPS -->
-    <a-entity gps-entity-place="latitude: 4,9390781; longitude: 114,9451212"
-              gltf-model="https://cors-anywhere.herokuapp.com/https://ajrisamir.github.io/webxr/Model4.glb" 
+    <a-entity gps-entity-place="latitude: -6.2000; longitude: 106.8166"
+              gltf-model="Model4.glb" 
               scale="1 1 1" 
               position="0 0 0">
     </a-entity>
@@ -31,23 +31,9 @@
   </a-scene>
 
   <script>
-  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
-    if (result.state === 'granted') {
-      console.log("Izin GPS sudah diberikan");
-    } else if (result.state === 'prompt') {
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          console.log("GPS aktif:", position.coords.latitude, position.coords.longitude);
-        },
-        function(error) {
-          console.error("Gagal mendapatkan GPS:", error.message);
-        }
-      );
-    } else {
-      alert("Izin GPS ditolak. Harap aktifkan izin lokasi di pengaturan browser.");
-    }
-  });
-</script>
-
+    window.onload = function() {
+      alert("Pastikan GPS Anda aktif! Jika tidak, objek tidak akan muncul.");
+    };
+  </script>
 </body>
 </html>
