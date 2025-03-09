@@ -19,7 +19,12 @@ async function setupCamera() {
 
 // Fungsi untuk mendeteksi pose
 async function detectPose(video) {
-  const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MediaPipePose);
+  // Memilih model pose yang tepat (MediaPipePose)
+  const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MediaPipePose, {
+    runtime: 'tfjs', // Pastikan menggunakan TensorFlow.js
+    modelType: 'lite' // Bisa juga 'full' untuk model yang lebih besar
+  });
+
   const poses = await detector.estimatePoses(video);
 
   // Untuk testing, kita log koordinat titik pose pertama
@@ -31,6 +36,7 @@ async function detectPose(video) {
   // Panggil lagi untuk mendeteksi pose secara berkelanjutan
   requestAnimationFrame(() => detectPose(video));
 }
+
 
 // Fungsi utama untuk setup
 async function main() {
