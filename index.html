@@ -31,9 +31,23 @@
   </a-scene>
 
   <script>
-    window.onload = function() {
-      alert("Pastikan GPS Anda aktif! Jika tidak, objek tidak akan muncul.");
-    };
-  </script>
+  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+    if (result.state === 'granted') {
+      console.log("Izin GPS sudah diberikan");
+    } else if (result.state === 'prompt') {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          console.log("GPS aktif:", position.coords.latitude, position.coords.longitude);
+        },
+        function(error) {
+          console.error("Gagal mendapatkan GPS:", error.message);
+        }
+      );
+    } else {
+      alert("Izin GPS ditolak. Harap aktifkan izin lokasi di pengaturan browser.");
+    }
+  });
+</script>
+
 </body>
 </html>
