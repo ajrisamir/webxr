@@ -17,12 +17,12 @@ async function setupCamera() {
   return video;
 }
 
-// Fungsi untuk mendeteksi pose
+// Fungsi untuk mendeteksi pose menggunakan MediaPipe Pose
 async function detectPose(video) {
-  // Memilih model pose yang tepat (MediaPipePose)
+  // Memilih model pose yang tepat (MediaPipePose) dan runtime 'tfjs'
   const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MediaPipePose, {
-    runtime: 'tfjs', // Pastikan menggunakan TensorFlow.js
-    modelType: 'lite' // Bisa juga 'full' untuk model yang lebih besar
+    runtime: 'tfjs', // Gunakan TensorFlow.js
+    modelType: 'full' // Gunakan model lengkap
   });
 
   const poses = await detector.estimatePoses(video);
@@ -36,7 +36,6 @@ async function detectPose(video) {
   // Panggil lagi untuk mendeteksi pose secara berkelanjutan
   requestAnimationFrame(() => detectPose(video));
 }
-
 
 // Fungsi utama untuk setup
 async function main() {
