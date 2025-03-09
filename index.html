@@ -23,7 +23,7 @@
   <a-scene embedded arjs>
     <a-marker preset="hiro" id="marker">
       <a-entity id="model" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
+        <a-gltf-model src="Model1.glb"></a-gltf-model>
       </a-entity>
     </a-marker>
     <a-entity id="persistentModel" visible="false"></a-entity>
@@ -37,7 +37,6 @@
     const persistentModel = document.getElementById('persistentModel');
     const saveButton = document.getElementById('saveButton');
     let isPositionSaved = false;
-    let savedPosition = null;
 
     marker.addEventListener('markerFound', function() {
       if (!isPositionSaved) {
@@ -53,25 +52,21 @@
     });
 
     saveButton.addEventListener('click', function() {
-      // Simpan posisi world-space dari model
       const worldPos = new THREE.Vector3();
       model.object3D.getWorldPosition(worldPos);
+      const worldQuat = new THREE.Quaternion();
+      model.object3D.getWorldQuaternion(worldQuat);
+      const worldScale = model.object3D.scale.clone();
       
-      // Set posisi model permanen
       persistentModel.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
-      persistentModel.setAttribute('scale', model.getAttribute('scale'));
+      persistentModel.setAttribute('rotation', `${THREE.MathUtils.radToDeg(worldQuat.x)} ${THREE.MathUtils.radToDeg(worldQuat.y)} ${THREE.MathUtils.radToDeg(worldQuat.z)}`);
+      persistentModel.setAttribute('scale', `${worldScale.x} ${worldScale.y} ${worldScale.z}`);
       persistentModel.innerHTML = model.innerHTML;
       persistentModel.setAttribute('visible', 'true');
       
-      // Nonaktifkan marker dan hapus model asli
-      model.parentNode.removeChild(model);
       marker.parentNode.removeChild(marker);
-      
-      // Sembunyikan tombol
       saveButton.style.display = 'none';
-      
       isPositionSaved = true;
-      alert("Posisi Model Tersimpan!");
     });
   </script>
 </body>
