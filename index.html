@@ -52,7 +52,7 @@
     <!-- Marker Hiro untuk menampilkan objek 3D -->
     <a-marker preset="hiro" id="marker1">
       <a-entity id="modelEntity1" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
+        <a-gltf-model src="Model1.glb"></a-gltf-model>
       </a-entity>
     </a-marker>
 
@@ -69,7 +69,7 @@
     const marker1 = document.getElementById('marker1');
     const saveButton = document.getElementById('saveButton');
     let savedPosition = null; // Variabel untuk menyimpan posisi objek saat marker terdeteksi
-    let isPositionSaved = false;
+    let isPositionSaved = false; // Variabel untuk menandai apakah posisi sudah disimpan
 
     // Fungsi untuk menyimpan posisi objek ketika tombol diklik
     function savePosition() {
@@ -87,7 +87,17 @@
       }
     }
 
-    // Ketika marker ditemukan, tampilkan tombol untuk menyimpan posisi
+    // Fungsi untuk memuat posisi yang tersimpan dari localStorage jika ada
+    function loadSavedPosition() {
+      const storedPosition = localStorage.getItem('savedPosition');
+      if (storedPosition) {
+        savedPosition = JSON.parse(storedPosition); // Ambil posisi yang disimpan
+        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang disimpan ke objek
+        isPositionSaved = true; // Tandai bahwa posisi telah disimpan
+      }
+    }
+
+    // Ketika marker ditemukan, tampilkan tombol untuk menyimpan posisi dan model 3D
     marker1.addEventListener('markerFound', function() {
       if (!isPositionSaved) {
         saveButton.style.display = 'block'; // Tampilkan tombol untuk menyimpan posisi jika posisi belum disimpan
@@ -105,16 +115,6 @@
     saveButton.addEventListener('click', function() {
       savePosition();
     });
-
-    // Fungsi untuk memuat posisi yang tersimpan dari localStorage jika ada
-    function loadSavedPosition() {
-      const storedPosition = localStorage.getItem('savedPosition');
-      if (storedPosition) {
-        savedPosition = JSON.parse(storedPosition); // Ambil posisi yang disimpan
-        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang disimpan ke objek
-        isPositionSaved = true; // Tandai bahwa posisi telah disimpan
-      }
-    }
 
     // Panggil fungsi untuk memuat posisi yang tersimpan saat halaman dimuat
     loadSavedPosition();
