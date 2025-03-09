@@ -3,24 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web AR with Pose Estimation</title>
-  <!-- Import TensorFlow.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <!-- Import TensorFlow Pose Detection Model -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
-  <!-- Import MediaPipe Pose -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
+  <title>Pose Tracking with Model on Hand</title>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.3.1626/pose.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.7.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
 </head>
 <body>
-  <h1>Web AR with Pose Estimation</h1>
-  
-  <!-- Video element untuk menampilkan webcam -->
-  <video id="video" autoplay width="640" height="480"></video>
-  
-  <!-- Tombol untuk memulai sesi AR -->
-  <button id="startARButton">Start AR Session</button>
-  
-  <!-- Import file JavaScript utama -->
+  <video id="video" width="640" height="480" style="position: absolute; top: 0; left: 0;" autoplay></video>
   <script src="app.js"></script>
 </body>
 </html>
