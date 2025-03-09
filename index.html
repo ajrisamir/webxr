@@ -59,7 +59,7 @@
       }
     }
 
-    // Fungsi untuk membuat objek tetap pada posisi yang tersimpan
+    // Fungsi untuk memastikan objek tetap pada posisi yang tersimpan
     function keepModelAtSavedPosition() {
       if (savedPosition !== null) {
         modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang tersimpan ke objek
@@ -73,12 +73,12 @@
 
     // Ketika marker hilang, pastikan objek tetap pada posisi yang tersimpan
     marker1.addEventListener('markerLost', function() {
+      // Jangan hapus objek, tetap pada posisi yang disimpan
       keepModelAtSavedPosition();
     });
 
-    // Animasi untuk melacak pergerakan marker secara terus-menerus
+    // Animasi untuk memastikan objek tetap berada di posisi yang tersimpan meskipun marker hilang
     function animate() {
-      // Pastikan objek tetap pada posisi yang tersimpan jika marker hilang
       if (savedPosition !== null) {
         keepModelAtSavedPosition();
       }
