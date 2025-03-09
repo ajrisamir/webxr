@@ -33,15 +33,16 @@
 
     /* Tombol untuk menyimpan posisi */
     #saveButton {
-      position: fixed;
+      position: absolute;
       top: 20px;
       left: 20px;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.7);
       color: white;
-      padding: 10px;
+      padding: 15px;
       border: none;
-      display: none;
+      display: none;  /* Awalnya disembunyikan */
       cursor: pointer;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -51,7 +52,7 @@
     <!-- Marker Hiro untuk menampilkan objek 3D -->
     <a-marker preset="hiro" id="marker1">
       <a-entity id="modelEntity1" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
+        <a-gltf-model src="Model1.glb"></a-gltf-model>
       </a-entity>
     </a-marker>
 
