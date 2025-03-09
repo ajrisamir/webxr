@@ -3,131 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan Posisi Terkunci dan Tombol Menyimpan Posisi</title>
-
-  <!-- A-Frame Library -->
+  <title>AR.js - Simpan Posisi Model</title>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-
-  <!-- AR.js Library -->
   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    a-scene {
-      width: 100%;
-      height: 100%;
-    }
-
-    a-camera {
-      z-index: 1;
-      position: fixed;
-      height: 100%;
-      width: 100%;
-      pointer-events: none;
-    }
-
-    /* Tombol untuk menyimpan posisi */
+    body { margin: 0; overflow: hidden; touch-action: none; }
     #saveButton {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 15px;
-      border: none;
-      display: none;  /* Awalnya disembunyikan */
-      cursor: pointer;
+      top: 20px; left: 20px;
+      padding: 10px 20px;
       font-size: 16px;
+      background: #000; color: #fff;
+      border: none; cursor: pointer;
+      display: none;
     }
   </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
-
-    <!-- Marker Hiro untuk menampilkan objek 3D -->
-    <a-marker preset="hiro" id="marker1">
-      <a-entity id="modelEntity1" position="0 0.5 0" scale="0.5 0.5 0.5">
-        <a-gltf-model src="Model4.glb"></a-gltf-model>
+<body>
+  <a-scene embedded arjs>
+    <a-marker preset="hiro" id="marker">
+      <a-entity id="model" position="0 0.5 0" scale="0.5 0.5 0.5">
+        <a-gltf-model src="Model1.glb"></a-gltf-model>
       </a-entity>
     </a-marker>
-
-    <!-- Kamera untuk AR.js -->
-    <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
-
+    <a-entity id="persistentModel" visible="false"></a-entity>
+    <a-camera position="0 0 0"></a-camera>
   </a-scene>
-
-  <!-- Tombol untuk menyimpan posisi model -->
   <button id="saveButton">Simpan Posisi</button>
 
   <script>
-    const modelEntity1 = document.getElementById('modelEntity1');
-    const marker1 = document.getElementById('marker1');
+    const marker = document.getElementById('marker');
+    const model = document.getElementById('model');
+    const persistentModel = document.getElementById('persistentModel');
     const saveButton = document.getElementById('saveButton');
-    let savedPosition = null; // Variabel untuk menyimpan posisi objek saat marker terdeteksi
-    let isPositionSaved = false; // Variabel untuk menandai apakah posisi sudah disimpan
+    let isPositionSaved = false;
+    let savedPosition = null;
 
-    // Fungsi untuk menyimpan posisi objek ketika tombol diklik
-    function savePosition() {
-      savedPosition = modelEntity1.object3D.position.clone(); // Simpan posisi dunia saat tombol diklik
-      localStorage.setItem('savedPosition', JSON.stringify(savedPosition)); // Simpan posisi ke localStorage
-      isPositionSaved = true;
-      saveButton.style.display = 'none'; // Sembunyikan tombol setelah posisi disimpan
-      alert("Posisi model berhasil disimpan!");
-    }
-
-    // Fungsi untuk menjaga objek tetap pada posisi yang disimpan
-    function keepModelAtSavedPosition() {
-      if (savedPosition !== null) {
-        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang disimpan ke objek
-      }
-    }
-
-    // Fungsi untuk memuat posisi yang tersimpan dari localStorage jika ada
-    function loadSavedPosition() {
-      const storedPosition = localStorage.getItem('savedPosition');
-      if (storedPosition) {
-        savedPosition = JSON.parse(storedPosition); // Ambil posisi yang disimpan
-        modelEntity1.object3D.position.copy(savedPosition); // Tetapkan posisi yang disimpan ke objek
-        isPositionSaved = true; // Tandai bahwa posisi telah disimpan
-      }
-    }
-
-    // Ketika marker ditemukan, tampilkan tombol untuk menyimpan posisi dan model 3D
-    marker1.addEventListener('markerFound', function() {
+    marker.addEventListener('markerFound', function() {
       if (!isPositionSaved) {
-        saveButton.style.display = 'block'; // Tampilkan tombol untuk menyimpan posisi jika posisi belum disimpan
+        saveButton.style.display = 'block';
       }
     });
 
-    // Ketika marker hilang, pastikan objek tetap berada di posisi yang tersimpan
-    marker1.addEventListener('markerLost', function() {
-      if (isPositionSaved) {
-        keepModelAtSavedPosition(); // Tetap posisi model yang sudah disimpan
+    marker.addEventListener('markerLost', function() {
+      if (!isPositionSaved) {
+        model.setAttribute('visible', 'false');
       }
     });
 
-    // Ketika tombol diklik, simpan posisi model
     saveButton.addEventListener('click', function() {
-      savePosition();
+      savedPosition = model.object3D.getWorldPosition(new THREE.Vector3());
+      persistentModel.setAttribute('position', `${savedPosition.x} ${savedPosition.y} ${savedPosition.z}`);
+      persistentModel.innerHTML = model.innerHTML;
+      persistentModel.setAttribute('visible', 'true');
+      isPositionSaved = true;
+      model.parentNode.removeChild(model);
+      saveButton.style.display = 'none';
+      alert("Posisi Model Tersimpan!");
     });
-
-    // Panggil fungsi untuk memuat posisi yang tersimpan saat halaman dimuat
-    loadSavedPosition();
-
-    // Animasi untuk memastikan objek tetap berada di posisi yang tersimpan meskipun marker hilang
-    function animate() {
-      if (savedPosition !== null && isPositionSaved) {
-        keepModelAtSavedPosition();
-      }
-      requestAnimationFrame(animate);
-    }
-
-    animate(); // Mulai animasi
   </script>
 </body>
 </html>
