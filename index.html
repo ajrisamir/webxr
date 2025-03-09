@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js dengan A-Frame dan World Tracking</title>
+  <title>AR.js dengan A-Frame dan Deteksi Warna Hijau</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -15,7 +15,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      touch-action: none; /* Menonaktifkan pinch zoom */
+      touch-action: none;
     }
 
     a-scene {
@@ -33,26 +33,92 @@
   </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: true; worldTracking: true; max-camera-orientation: 0.5;">
-
-    <!-- Objek 3D yang akan muncul tanpa marker -->
-    <a-entity id="modelEntity" position="0 0.5 0" scale="0.5 0.5 0.5">
-      <a-gltf-model src="Model4.glb"></a-gltf-model>
-    </a-entity>
+  <a-scene embedded arjs="sourceType: webcam; markerAreaEnabled: false; debugUIEnabled: true; trackingMethod: best; max-camera-orientation: 0.5;">
+    <!-- Marker Hiro untuk kontrol gerakan -->
+    <a-marker preset="hiro" id="hiroMarker"></a-marker>
 
     <!-- Kamera untuk AR.js -->
     <a-camera position="0 0 0" fov="80" near="0.1" far="1000" rotation="0 0 0"></a-camera>
 
+    <!-- Marker hijau yang akan muncul saat warna hijau terdeteksi -->
+    <a-entity id="modelEntity" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
+      <a-gltf-model src="Model4.glb"></a-gltf-model>
+    </a-entity>
   </a-scene>
 
   <script>
-    // Tidak ada marker khusus, jadi model 3D akan selalu muncul saat perangkat sudah siap untuk AR.
     const modelEntity = document.getElementById('modelEntity');
+    const camera = document.querySelector('a-camera');
 
-    // Anda dapat menambahkan event listener untuk interaksi pengguna seperti klik untuk memunculkan model
-    window.addEventListener('click', function () {
-      modelEntity.setAttribute('visible', true); // Menampilkan model ketika layar diklik
-    });
+    // Canvas untuk deteksi warna hijau
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    let isModelVisible = false;
+    let lastPosition = { x: 0, y: 0 };
+
+    // Fungsi untuk mendeteksi warna hijau
+    function detectGreen() {
+      const video = document.querySelector('video');
+      if (!video) return;
+
+      // Menyusun ulang ukuran canvas sesuai dengan ukuran video (kamera)
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Mengambil data piksel dari canvas
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+
+      let greenDetected = false;
+      let greenX = 0;
+      let greenY = 0;
+
+      // Loop untuk mencari warna hijau (RGB: cukup besar nilai G dan kecil R/B)
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i];     // Merah
+        const g = pixels[i + 1]; // Hijau
+        const b = pixels[i + 2]; // Biru
+
+        if (g > 100 && r < 50 && b < 50) {
+          // Deteksi warna hijau
+          greenDetected = true;
+          const x = (i / 4) % canvas.width;
+          const y = Math.floor((i / 4) / canvas.width);
+          greenX += x;
+          greenY += y;
+        }
+      }
+
+      if (greenDetected) {
+        const avgX = greenX / pixels.length;
+        const avgY = greenY / pixels.length;
+        lastPosition = { x: avgX, y: avgY };
+
+        // Menampilkan model saat warna hijau terdeteksi
+        if (!isModelVisible) {
+          modelEntity.setAttribute('visible', 'true');
+          isModelVisible = true;
+        }
+
+        // Menyelaraskan posisi model dengan deteksi posisi hijau
+        modelEntity.setAttribute('position', `${avgX / 100} ${avgY / 100} 0`);
+      } else {
+        if (isModelVisible) {
+          // Menyembunyikan model jika tidak ada warna hijau
+          modelEntity.setAttribute('visible', 'false');
+          isModelVisible = false;
+        }
+      }
+    }
+
+    // Menjalankan deteksi warna hijau setiap frame
+    function animate() {
+      detectGreen();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
   </script>
 </body>
 </html>
