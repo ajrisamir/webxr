@@ -41,6 +41,7 @@
 
     marker.addEventListener('markerFound', function() {
       if (!isPositionSaved) {
+        model.setAttribute('visible', 'true');
         saveButton.style.display = 'block';
       }
     });
@@ -52,13 +53,24 @@
     });
 
     saveButton.addEventListener('click', function() {
-      savedPosition = model.object3D.getWorldPosition(new THREE.Vector3());
-      persistentModel.setAttribute('position', `${savedPosition.x} ${savedPosition.y} ${savedPosition.z}`);
+      // Simpan posisi world-space dari model
+      const worldPos = new THREE.Vector3();
+      model.object3D.getWorldPosition(worldPos);
+      
+      // Set posisi model permanen
+      persistentModel.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
+      persistentModel.setAttribute('scale', model.getAttribute('scale'));
       persistentModel.innerHTML = model.innerHTML;
       persistentModel.setAttribute('visible', 'true');
-      isPositionSaved = true;
+      
+      // Nonaktifkan marker dan hapus model asli
       model.parentNode.removeChild(model);
+      marker.parentNode.removeChild(marker);
+      
+      // Sembunyikan tombol
       saveButton.style.display = 'none';
+      
+      isPositionSaved = true;
       alert("Posisi Model Tersimpan!");
     });
   </script>
