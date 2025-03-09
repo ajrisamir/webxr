@@ -2,31 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AR.js GPS Tracking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raycasting AR</title>
 
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-
-  <!-- AR.js Library with Location-Based Support -->
-  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-
-  <style>
-    body { margin: 0; overflow: hidden; touch-action: none; }
-    a-scene { width: 100%; height: 100%; }
-  </style>
 </head>
 <body>
   <a-scene>
-  <a-entity camera>
-    <a-entity id="cursor" cursor="fuse: true; fuseTimeout: 500;" raycaster="objects: .clickable" position="0 0 -1"></a-entity>
-  </a-entity>
+    <!-- Kamera dengan Raycaster untuk mendeteksi klik atau sentuhan -->
+    <a-camera>
+      <!-- Cursor untuk mendeteksi objek -->
+      <a-entity id="cursor" cursor="fuse: true; fuseTimeout: 500;" raycaster="objects: .clickable" position="0 0 -1"></a-entity>
+    </a-camera>
 
-  <!-- Objek yang dapat diklik -->
-  <a-entity class="clickable" geometry="primitive: box" material="color: blue" position="0 0 -5"></a-entity>
+    <!-- Objek yang dapat diklik -->
+    <a-entity class="clickable" geometry="primitive: box" material="color: blue" position="0 0 -5"></a-entity>
 
-  <!-- Objek 3D yang akan ditempatkan berdasarkan interaksi -->
-  <a-entity id="model" gltf-model="Model4.glb" scale="1 1 1" position="0 0 -10"></a-entity>
-</a-scene>
+    <!-- Model 3D yang akan muncul setelah interaksi -->
+    <a-entity id="model" gltf-model="Model4.glb" scale="1 1 1" position="0 0 -10"></a-entity>
+  </a-scene>
+
+  <script>
+    // Menangani interaksi raycasting
+    document.querySelector('#cursor').addEventListener('click', function () {
+      // Menempatkan model 3D di posisi yang baru setelah raycasting
+      var model = document.querySelector('#model');
+      model.setAttribute('position', '0 1 -5');  // Sesuaikan posisi model sesuai interaksi
+    });
+  </script>
 </body>
 </html>
