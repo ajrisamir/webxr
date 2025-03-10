@@ -19,13 +19,11 @@
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480"></canvas>
 
-    <!-- A-Frame Scene untuk menampilkan model 3D -->
     <a-scene embedded arjs="sourceType: webcam;">
-        <!-- Model 3D di sini -->
-        <a-entity id="model" 
-                  position="0 0 0" 
-                  scale="0.1 0.1 0.1" 
-                  gltf-model="url(Model4.glb)" 
+        <a-entity id="model"
+                  position="0 0 -1"
+                  scale="0.1 0.1 0.1"
+                  gltf-model="url(Model4.glb)"
                   rotation="0 0 0">
         </a-entity>
     </a-scene>
