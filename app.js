@@ -50,11 +50,17 @@ function onResults(results) {
                     Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
                 );
 
-                const scale = distance * 5;
-                modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                // Menghitung skala relatif terhadap ukuran canvas
+                const canvasDiagonal = Math.sqrt(
+                    Math.pow(canvasElement.width, 2) + Math.pow(canvasElement.height, 2)
+                );
+                const relativeScale = distance / canvasDiagonal * 10; // Sesuaikan faktor pengali
 
-                const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * 2;
-                const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * 2;
+                modelEntity.setAttribute('scale', `${relativeScale} ${relativeScale} ${relativeScale}`);
+
+                // Menghitung posisi relatif terhadap ukuran canvas
+                const aframeX = (indexFinger.x - 0.5) * 2;
+                const aframeY = -(indexFinger.y - 0.5) * 2;
 
                 modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
 
