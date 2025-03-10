@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 videoElement.onloadedmetadata = () => resolve();
             });
         } catch (error) {
-            console.error("Gagal mengakses kamera:", error);
+            console.error("❌ Gagal mengakses kamera:", error);
         }
     }
 
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     hands.setOptions({
-        maxNumHands: 1,         // Hanya deteksi satu tangan
-        modelComplexity: 1,      // Gunakan model sederhana untuk kecepatan
+        maxNumHands: 1,
+        modelComplexity: 1,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
     });
@@ -48,11 +48,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
     camera3D.position.z = 2;
 
+    // ✅ Tambahkan cahaya agar objek terlihat lebih jelas
+    const light = new THREE.AmbientLight(0xffffff, 1.5);
+    scene.add(light);
+
     // ✅ Buat objek 3D (kubus merah)
     const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
+
+    // ✅ Loop render agar objek 3D terus diperbarui
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera3D);
+    }
+    animate();
 
     // ✅ Fungsi deteksi tangan dan update posisi objek 3D
     function onResults(results) {
@@ -66,11 +77,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
 
-        // Konversi posisi ke koordinat Three.js
-        cube.position.x = (palm.x - 0.5) * 2;  // Skala agar sesuai layar
-        cube.position.y = -(palm.y - 0.5) * 2; // Inversi karena koordinat berbeda
-
-        renderer.render(scene, camera3D);
+        // ✅ Pastikan data landmark valid sebelum diproses
+        if (palm.x !== undefined && palm.y !== undefined) {
+            // Konversi posisi tangan ke koordinat Three.js
+            cube.position.x = (palm.x - 0.5) * 3;  // Perbaikan skala
+            cube.position.y = -(palm.y - 0.5) * 3; // Inversi karena koordinat berbeda
+            cube.position.z = -1.5; // Atur jarak dari kamera
+        }
     }
 
     // ✅ Jalankan kamera
