@@ -17,15 +17,16 @@
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
 
-    <!-- A-Frame scene -->
-    <!-- Coba mengganti model 3D dengan objek sederhana (box atau sphere) -->
-<a-scene>
-    <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-    <!-- Model .glb -->
-    <a-entity id="hand-model" gltf-model="url(path/to/your/model.glb)" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
-</a-scene>
+    <!-- A-Frame Scene -->
+    <a-scene>
+        <!-- Kamera -->
+        <a-camera position="0 1.6 0"></a-camera>
 
+        <!-- Model .glb (Model 3D Anda) -->
+        <a-entity id="hand-model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
+    </a-scene>
 
+    <!-- Link ke file JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
