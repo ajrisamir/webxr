@@ -66,13 +66,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     processVideoFrame();
 
     function positionModelAtHand(x, y) {
-        // Konversi posisi untuk A-Frame dalam rentang -1 hingga 1
-        const scaleX = (x / canvasElement.width) * 2 - 1;
-        const scaleY = -((y / canvasElement.height) * 2 - 1);
+    // Konversi posisi ke dalam rentang -1 hingga 1 untuk X dan Y
+    const scaleX = (x / canvasElement.width) * 2 - 1;
+    const scaleY = -((y / canvasElement.height) * 2 - 1);
 
-        console.log(`Posisi Model: X: ${scaleX}, Y: ${scaleY}`);
+    // Sesuaikan nilai Z untuk membawa model lebih dekat ke kamera
+    const scaleZ = -1;  // Nilai Z ini bisa disesuaikan lebih lanjut agar model lebih dekat ke tangan
 
-        // Posisikan model di dunia AR menggunakan A-Frame
-        model.setAttribute('position', `${scaleX} ${scaleY} -1`);  // Z=-1 agar model terlihat
-    }
+    // Jika model terlalu jauh, coba kurangi nilai Z (misalnya -0.5 atau lebih tinggi)
+    console.log(`Posisi Model: X: ${scaleX}, Y: ${scaleY}, Z: ${scaleZ}`);
+
+    // Posisikan model di dunia AR menggunakan A-Frame
+    model.setAttribute('position', `${scaleX} ${scaleY} ${scaleZ}`);  // Pastikan Z tidak terlalu besar
+}
+
 });
