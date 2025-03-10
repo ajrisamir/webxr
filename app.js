@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         canvasCtx.fill();
 
         // Posisikan model 3D pada telapak tangan
-        positionModelAtHand(palm.x, palm.y);
+        positionModelAtHand(palm.x * canvasElement.width, palm.y * canvasElement.height);
     }
 
     async function processVideoFrame() {
@@ -65,14 +65,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     videoElement.play();
     processVideoFrame();
 
-    // Fungsi untuk memposisikan model 3D
     function positionModelAtHand(x, y) {
-        const model = document.getElementById("model");
+        // Model AR harus diposisikan dalam koordinat dunia AR (-1 hingga 1)
+        const scaleX = (x / canvasElement.width) * 2 - 1;  // Mengonversi X menjadi rentang -1 hingga 1
+        const scaleY = -((y / canvasElement.height) * 2 - 1); // Mengonversi Y menjadi rentang -1 hingga 1 (negatif agar arah Y sesuai)
 
-        // Konversi posisi x, y ke sistem koordinat dunia AR (dalam A-Frame, kita bisa mengubah koordinat dalam sistem 3D)
-        // Arahkan model ke posisi telapak tangan (posisi di layar)
-        const scaleX = (x - 0.5) * 2;  // Menyesuaikan dengan rentang -1 hingga 1
-        const scaleY = (y - 0.5) * 2;  // Menyesuaikan dengan rentang -1 hingga 1
-        model.setAttribute('position', `${scaleX} ${scaleY} -3`);  // Mengatur posisi model 3D dalam dunia AR
+        console.log(`Posisi Model: X: ${scaleX}, Y: ${scaleY}`);
+
+        // Posisikan model di dunia AR
+        model.setAttribute('position', `${scaleX} ${scaleY} -1`);  // Z=-1 agar model terlihat
     }
 });
