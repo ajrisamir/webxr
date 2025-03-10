@@ -48,13 +48,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     function handleHandInteraction(x, y) {
         const modelEntity = document.querySelector("#model-entity");
 
-        // Rotasi model berdasarkan posisi x dan y (misalnya dengan jarak antara tangan)
-        const rotationX = x * 360;
-        const rotationY = y * 360;
+        // Batasi rotasi model agar tidak terlalu ekstrem
+        const rotationX = (x - 0.5) * 360;  // Dapatkan nilai rotasi yang lebih wajar
+        const rotationY = (y - 0.5) * 360;
         modelEntity.setAttribute("rotation", `${rotationX} ${rotationY} 0`);
-        
-        // Scaling model berdasarkan jarak tangan
-        const scale = Math.max(0.5, Math.min(1.5, (x + y) * 2));  // Atur scale dengan batas 0.5 hingga 1.5
+
+        // Skalakan model berdasarkan jarak tangan dengan pembatasan agar tidak zoom terlalu jauh atau terlalu dekat
+        const scale = Math.max(0.5, Math.min(2.0, (x + y) * 2)); // Pembatasan skala
         modelEntity.setAttribute("scale", `${scale} ${scale} ${scale}`);
     }
 
