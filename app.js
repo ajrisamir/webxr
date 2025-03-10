@@ -4,9 +4,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const videoElement = document.getElementById("video");
     const canvasElement = document.getElementById("output_canvas");
     const canvasCtx = canvasElement.getContext("2d");
+    const handModel = document.querySelector("#hand-model"); // A-Frame model
 
     async function setupCamera() {
-        console.log("🎥 Mengakses kamera belakang...");
+        console.log("🎥 Mengakses kamera...");
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: "environment" } // Gunakan kamera belakang
@@ -37,40 +38,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     hands.onResults(onResults);
 
-    const model3D = document.getElementById("3d-model"); // A-Frame model 3D (Model4.glb)
-
     function onResults(results) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
             console.warn("❌ Tidak ada tangan terdeteksi.");
-            model3D.setAttribute("visible", "false"); // Sembunyikan model 3D jika tidak ada tangan terdeteksi
+            handModel.setAttribute('visible', 'false'); // Sembunyikan model 3D
             return;
         }
 
         console.log("📊 Data hasil deteksi tangan diterima!");
         const hand = results.multiHandLandmarks[0];
         const palm = hand[9]; // Titik tengah telapak tangan
+
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
 
-        // Gambar lingkaran di atas telapak tangan
-        canvasCtx.fillStyle = "red";
-        canvasCtx.beginPath();
-        canvasCtx.arc(palm.x * canvasElement.width, palm.y * canvasElement.height, 10, 0, 2 * Math.PI);
-        canvasCtx.fill();
+        // Menampilkan model 3D pada posisi telapak tangan
+        const xPos = palm.x * 2 - 1; // Menyesuaikan koordinat agar model bisa muncul
+        const yPos = -(palm.y * 2 - 1); // Menyesuaikan koordinat agar model bisa muncul
 
-        // Posisi model 3D berdasarkan koordinat telapak tangan
-        const sceneWidth = window.innerWidth;
-        const sceneHeight = window.innerHeight;
-
-        // Konversi posisi telapak tangan menjadi posisi 3D
-        const modelX = (palm.x - 0.5) * 2; // Normalisasi x
-        const modelY = -(palm.y - 0.5) * 2; // Normalisasi y (dengan invert Y)
-        const modelZ = -3; // Posisi z (sejauh mana model akan muncul)
-
-        model3D.setAttribute("position", `${modelX} ${modelY} ${modelZ}`);
-        model3D.setAttribute("visible", "true"); // Tampilkan model 3D saat tangan terdeteksi
+        handModel.setAttribute('visible', 'true');
+        handModel.setAttribute('position', `${xPos} ${yPos} -3`); // Menempatkan model pada posisi telapak tangan
     }
 
     async function processVideoFrame() {
