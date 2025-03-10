@@ -3,6 +3,9 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
+canvasElement.width = 480;
+canvasElement.height = 720;
+
 let previousLandmarks = null;
 
 function smoothLandmarks(landmarks) {
@@ -81,8 +84,8 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 640,
-    height: 480,
+    width: 480,
+    height: 720,
     facingMode: "environment"
 });
 camera.start();
