@@ -66,13 +66,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     processVideoFrame();
 
     function positionModelAtHand(x, y) {
-        // Model AR harus diposisikan dalam koordinat dunia AR (-1 hingga 1)
-        const scaleX = (x / canvasElement.width) * 2 - 1;  // Mengonversi X menjadi rentang -1 hingga 1
-        const scaleY = -((y / canvasElement.height) * 2 - 1); // Mengonversi Y menjadi rentang -1 hingga 1 (negatif agar arah Y sesuai)
+        // Konversi posisi untuk A-Frame dalam rentang -1 hingga 1
+        const scaleX = (x / canvasElement.width) * 2 - 1;
+        const scaleY = -((y / canvasElement.height) * 2 - 1);
 
         console.log(`Posisi Model: X: ${scaleX}, Y: ${scaleY}`);
 
-        // Posisikan model di dunia AR
+        // Posisikan model di dunia AR menggunakan A-Frame
         model.setAttribute('position', `${scaleX} ${scaleY} -1`);  // Z=-1 agar model terlihat
     }
 });
