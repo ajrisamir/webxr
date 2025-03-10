@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR</title>
+    <title>Hand Tracking AR with A-Frame</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script> <!-- A-Frame -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-glb-model-loader/dist/aframe-glb-model-loader.min.js"></script> <!-- A-Frame GLB Loader -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -19,13 +17,10 @@
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
 
-    <!-- A-Frame scene untuk menampilkan model 3D -->
-    <a-scene embedded arjs>
-        <a-camera id="camera" position="0 0 0" look-controls="pointerLockEnabled: true"></a-camera>
-        <!-- Ganti bola merah dengan model GLB -->
-        <a-entity id="3d-model" scale="0.1 0.1 0.1" visible="false">
-            <a-gltf-model src="Model4.glb"></a-gltf-model>
-        </a-entity> 
+    <!-- A-Frame scene -->
+    <a-scene>
+        <!-- Model placeholder -->
+        <a-entity id="hand-model" gltf-model="Model4.glb" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
     </a-scene>
 
     <script src="app.js"></script>
