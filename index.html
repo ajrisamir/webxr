@@ -18,10 +18,13 @@
     <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
 
     <!-- A-Frame scene -->
-    <a-scene>
-        <!-- Model placeholder -->
-        <a-entity id="hand-model" gltf-model="Model4.glb" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
-    </a-scene>
+    <!-- Coba mengganti model 3D dengan objek sederhana (box atau sphere) -->
+<a-scene>
+    <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+    <!-- Model .glb -->
+    <a-entity id="hand-model" gltf-model="url(path/to/your/model.glb)" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
+</a-scene>
+
 
     <script src="app.js"></script>
 </body>
