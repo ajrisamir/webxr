@@ -49,13 +49,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             width: 640,
             height: 480
         });
+
+        console.log("📽️ Memulai kamera...");
         camera.start();
+        console.log("✅ Kamera seharusnya sudah berjalan.");
     } catch (error) {
         console.error("❌ MediaPipe Hands gagal diinisialisasi:", error);
     }
 
     function onResults(results) {
         console.log("📊 Data hasil deteksi tangan diterima!");
+        console.log("🔍 Deteksi:", results);
 
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
             console.warn("❌ Tidak ada tangan terdeteksi.");
@@ -64,7 +68,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const hand = results.multiHandLandmarks[0];
         const palm = hand[9]; // Titik tengah telapak tangan
-
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
     }
 
