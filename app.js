@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     hands.onResults(onResults);
 
-    const model3D = document.getElementById("3d-model"); // A-Frame model 3D (lingkaran)
+    const model3D = document.getElementById("3d-model"); // A-Frame model 3D (Model4.glb)
 
     function onResults(results) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
