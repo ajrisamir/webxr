@@ -39,22 +39,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) return;
 
         const hand = results.multiHandLandmarks[0];
-        const thumb = hand[4]; // Contoh titik untuk interaksi (thumb tip)
+        const palm = hand[9]; // Titik tengah telapak tangan untuk referensi
 
-        // Gunakan posisi thumb untuk melakukan interaksi dengan model (rotasi dan scale)
-        handleHandInteraction(thumb.x, thumb.y);
+        // Posisikan model 3D berdasarkan posisi telapak tangan
+        positionModelAtHand(palm.x * canvasElement.width, palm.y * canvasElement.height);
     }
 
-    function handleHandInteraction(x, y) {
+    // Fungsi untuk menyesuaikan posisi dan skala model 3D pada tangan
+    function positionModelAtHand(x, y) {
         const modelEntity = document.querySelector("#model-entity");
 
-        // Batasi rotasi model agar tidak terlalu ekstrem
-        const rotationX = (x - 0.5) * 360;  // Dapatkan nilai rotasi yang lebih wajar
-        const rotationY = (y - 0.5) * 360;
-        modelEntity.setAttribute("rotation", `${rotationX} ${rotationY} 0`);
+        // Konversi koordinat (x, y) ke dalam ruang 3D
+        const posX = (x - canvasElement.width / 2) / canvasElement.width * 2;
+        const posY = -(y - canvasElement.height / 2) / canvasElement.height * 2;
 
-        // Skalakan model berdasarkan jarak tangan dengan pembatasan agar tidak zoom terlalu jauh atau terlalu dekat
-        const scale = Math.max(0.5, Math.min(2.0, (x + y) * 2)); // Pembatasan skala
+        // Posisi model 3D di ruang AR
+        modelEntity.setAttribute("position", `${posX} ${posY} -1`); // Set posisi di depan kamera
+
+        // Batasi scale model agar tidak terlalu besar atau kecil
+        const scale = 1; // Ukuran model tetap
         modelEntity.setAttribute("scale", `${scale} ${scale} ${scale}`);
     }
 
