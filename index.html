@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR with Marker</title>
+    <title>Hand Tracking AR dengan Marker</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -22,9 +22,8 @@
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-marker type="pattern" url="pattern-marker.patt">
-            <a-entity id="model"
-                      position="0 0.5 0" scale="0.5 0.5 0.5">
-                      <a-gltf-model src="Model4.glb"></a-gltf-model>
+            <a-entity id="model" position="0 0.5 0" scale="0.5 0.5 0.5">
+                <a-gltf-model src="Model4.glb"></a-gltf-model>
             </a-entity>
         </a-marker>
         <a-entity camera></a-entity>
