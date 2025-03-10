@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -15,7 +14,7 @@
 </head>
 <body>
     <video id="video" autoplay playsinline style="display: none;"></video>
-<canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
+    <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
     <script src="app.js"></script>
 </body>
 </html>
