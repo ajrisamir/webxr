@@ -7,21 +7,59 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2.5.0/webcomponents-loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@google/model-viewer@2.0.0-beta.5/dist/model-viewer.js"></script>
+    <!-- A-Frame dan AR.js untuk AR -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.0/aframe/build/aframe-ar.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
         canvas { position: absolute; top: 0; left: 0; }
-        model-viewer { position: absolute; pointer-events: none; }
     </style>
 </head>
 <body>
+    <!-- AR Scene menggunakan A-Frame -->
+    <a-scene embedded arjs>
+        <!-- Kamera AR -->
+        <a-entity camera></a-entity>
+        <!-- Elemen Model 3D -->
+        <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.2 0.2 0.2"></a-entity>
+    </a-scene>
+
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480"></canvas>
 
-    <!-- Model Viewer untuk menampilkan model 3D -->
-    <model-viewer id="model" src="Model4.glb" alt="3D model" camera-controls auto-rotate></model-viewer>
+    <script src="app.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Tracking AR</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <!-- A-Frame dan AR.js untuk AR -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.0/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
+        canvas { position: absolute; top: 0; left: 0; }
+    </style>
+</head>
+<body>
+    <!-- AR Scene menggunakan A-Frame -->
+    <a-scene embedded arjs>
+        <!-- Kamera AR -->
+        <a-entity camera></a-entity>
+        <!-- Elemen Model 3D -->
+        <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.2 0.2 0.2"></a-entity>
+    </a-scene>
+
+    <video id="video" autoplay playsinline style="display: none;"></video>
+    <canvas id="output_canvas" width="640" height="480"></canvas>
 
     <script src="app.js"></script>
 </body>
