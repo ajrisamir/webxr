@@ -5,12 +5,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const canvasElement = document.getElementById("output_canvas");
     const canvasCtx = canvasElement.getContext("2d");
 
-    // Setup kamera
     async function setupCamera() {
         console.log("🎥 Mengakses kamera belakang...");
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" }
+                video: { facingMode: "environment" } // Gunakan kamera belakang
             });
             videoElement.srcObject = stream;
             return new Promise((resolve) => {
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Inisialisasi MediaPipe Hands
     console.log("🖐️ Menginisialisasi MediaPipe Hands...");
     const hands = new Hands({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -39,23 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     hands.onResults(onResults);
 
-    // Inisialisasi scene 3D menggunakan Three.js
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, canvasElement.width / canvasElement.height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasElement });
-    renderer.setSize(canvasElement.width, canvasElement.height);
-
-    // Tambahkan cahaya
-    const light = new THREE.AmbientLight(0x404040); // Cahaya lembut
-    scene.add(light);
-
-    // Buat model 3D (misalnya bola kecil)
-    const geometry = new THREE.SphereGeometry(0.05, 32, 32); // Bola kecil
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Warna merah
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-
-    camera.position.z = 2;
+    const model3D = document.getElementById("3d-model"); // A-Frame model 3D (lingkaran)
 
     function onResults(results) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -63,9 +45,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
             console.warn("❌ Tidak ada tangan terdeteksi.");
+            model3D.setAttribute("visible", "false"); // Sembunyikan model 3D jika tidak ada tangan terdeteksi
             return;
         }
 
+        console.log("📊 Data hasil deteksi tangan diterima!");
         const hand = results.multiHandLandmarks[0];
         const palm = hand[9]; // Titik tengah telapak tangan
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
@@ -76,14 +60,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         canvasCtx.arc(palm.x * canvasElement.width, palm.y * canvasElement.height, 10, 0, 2 * Math.PI);
         canvasCtx.fill();
 
-        // Update posisi model 3D berdasarkan koordinat telapak tangan
-        sphere.position.x = (palm.x - 0.5) * 2; // Konversi ke rentang (-1, 1)
-        sphere.position.y = -(palm.y - 0.5) * 2; // Konversi ke rentang (-1, 1)
+        // Posisi model 3D berdasarkan koordinat telapak tangan
+        const sceneWidth = window.innerWidth;
+        const sceneHeight = window.innerHeight;
+
+        // Konversi posisi telapak tangan menjadi posisi 3D
+        const modelX = (palm.x - 0.5) * 2; // Normalisasi x
+        const modelY = -(palm.y - 0.5) * 2; // Normalisasi y (dengan invert Y)
+        const modelZ = -3; // Posisi z (sejauh mana model akan muncul)
+
+        model3D.setAttribute("position", `${modelX} ${modelY} ${modelZ}`);
+        model3D.setAttribute("visible", "true"); // Tampilkan model 3D saat tangan terdeteksi
     }
 
     async function processVideoFrame() {
         await hands.send({ image: videoElement });
-        renderer.render(scene, camera);
         requestAnimationFrame(processVideoFrame);
     }
 
