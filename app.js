@@ -53,9 +53,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const palm = hand[9]; // Titik tengah telapak tangan
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
 
-        // Mendapatkan posisi telapak tangan
-        const xPos = palm.x * canvasElement.width;
-        const yPos = palm.y * canvasElement.height;
+        // Menggambar lingkaran merah di canvas
+        canvasCtx.fillStyle = "red";
+        canvasCtx.beginPath();
+        canvasCtx.arc(palm.x * canvasElement.width, palm.y * canvasElement.height, 10, 0, 2 * Math.PI);
+        canvasCtx.fill();
 
         // Menunggu model selesai dimuat sebelum mengubah posisi
         const handModel = document.querySelector('#hand-model');
@@ -63,6 +65,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Pastikan model sudah dimuat sebelum mengubah posisi
             handModel.addEventListener('model-loaded', () => {
                 console.log("✅ Model 3D berhasil dimuat!");
+
+                // Menghitung posisi 3D berdasarkan posisi 2D dari tangan
+                const xPos = palm.x * 2 - 1;  // Mengubah koordinat x ke range -1 hingga 1 untuk A-Frame
+                const yPos = -(palm.y * 2 - 1);  // Mengubah koordinat y ke range -1 hingga 1 untuk A-Frame
+
+                // Set posisi model 3D
                 handModel.setAttribute('position', `${xPos} ${yPos} -2`);  // Posisi model 3D
                 handModel.setAttribute('visible', 'true');  // Menampilkan model
             });
