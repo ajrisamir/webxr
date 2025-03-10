@@ -22,33 +22,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     console.log("🖐️ Menginisialisasi MediaPipe Hands...");
-    const hands = new Hands({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
+    try {
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
 
-    hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-    });
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
 
-    hands.onResults(onResults);
+        hands.onResults(onResults);
 
-    const camera = new Camera(videoElement, {
-        onFrame: async () => {
-            console.log("📸 Frame diambil, mengirim ke MediaPipe...");
-            try {
-                await hands.send({ image: videoElement });
-                console.log("✅ Frame berhasil dikirim ke MediaPipe!");
-            } catch (error) {
-                console.error("❌ Gagal mengirim frame ke MediaPipe:", error);
-            }
-        },
-        width: 640,
-        height: 480
-    });
-    camera.start();
+        const camera = new Camera(videoElement, {
+            onFrame: async () => {
+                console.log("📸 Frame diambil, mengirim ke MediaPipe...");
+                try {
+                    await hands.send({ image: videoElement });
+                    console.log("✅ Frame berhasil dikirim ke MediaPipe!");
+                } catch (error) {
+                    console.error("❌ Gagal mengirim frame ke MediaPipe:", error);
+                }
+            },
+            width: 640,
+            height: 480
+        });
+        camera.start();
+    } catch (error) {
+        console.error("❌ MediaPipe Hands gagal diinisialisasi:", error);
+    }
 
     function onResults(results) {
         console.log("📊 Data hasil deteksi tangan diterima!");
