@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR with A-Frame</title>
+    <title>Hand Tracking AR</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -15,18 +15,7 @@
 </head>
 <body>
     <video id="video" autoplay playsinline style="display: none;"></video>
-    <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
-
-    <!-- A-Frame Scene -->
-    <a-scene>
-        <!-- Kamera -->
-        <a-camera position="0 1.6 0"></a-camera>
-
-        <!-- Model .glb (Model 3D Anda) -->
-        <a-entity id="hand-model" gltf-model="Model4.glb" scale="0.1 0.1 0.1" position="0 0 -3" visible="false"></a-entity>
-    </a-scene>
-
-    <!-- Link ke file JavaScript -->
+<canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
     <script src="app.js"></script>
 </body>
 </html>
