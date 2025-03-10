@@ -92,7 +92,7 @@ const camera = new Camera(videoElement, {
     },
     width: 480,
     height: 480,
-    facingMode: "environment"
+    facingMode: "user"
 });
 camera.start();
 
