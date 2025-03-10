@@ -57,18 +57,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const xPos = palm.x * canvasElement.width;
         const yPos = palm.y * canvasElement.height;
 
-        // Pastikan elemen model sudah ada dan model 3D siap
+        // Menunggu model selesai dimuat sebelum mengubah posisi
         const handModel = document.querySelector('#hand-model');
         if (handModel) {
-            // Menunggu model selesai dimuat
-            handModel.addEventListener('model-loaded', function() {
+            // Pastikan model sudah dimuat sebelum mengubah posisi
+            handModel.addEventListener('model-loaded', () => {
                 console.log("✅ Model 3D berhasil dimuat!");
-                handModel.setAttribute('position', `${xPos} ${yPos} -2`);  // Posisi model
+                handModel.setAttribute('position', `${xPos} ${yPos} -2`);  // Posisi model 3D
                 handModel.setAttribute('visible', 'true');  // Menampilkan model
             });
 
-            // Jika model belum dimuat, tampilkan pesan error
-            handModel.addEventListener('error', function() {
+            // Jika model gagal dimuat
+            handModel.addEventListener('error', () => {
                 console.error("❌ Gagal memuat model 3D.");
             });
         } else {
