@@ -89,12 +89,14 @@ camera.start();
 
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
+    alert("Kamera tidak dapat diakses. Pastikan kamera terhubung dan izin diberikan.");
 };
 
 modelEntity.addEventListener('model-loaded', () => {
-    console.log("Model 3D loaded successfully!");
+    console.log("Model 3D berhasil dimuat!");
 });
 
 modelEntity.addEventListener('model-error', (error) => {
     console.error("Error loading 3D model:", error);
+    alert("Gagal memuat model 3D. Periksa jalur file model.");
 });
