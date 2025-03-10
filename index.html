@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR - Palm Object</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <title>Hand Tracking AR</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -19,10 +19,15 @@
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480"></canvas>
 
-    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best;">
-        <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity>
-        <a-entity id="hand" geometry="primitive: sphere; radius: 0.05;" material="color: blue;" position="0 0 -1"></a-entity>
-        <a-entity camera></a-entity>
+    <!-- A-Frame Scene untuk menampilkan model 3D -->
+    <a-scene embedded arjs="sourceType: webcam;">
+        <!-- Model 3D di sini -->
+        <a-entity id="model" 
+                  position="0 0 0" 
+                  scale="0.1 0.1 0.1" 
+                  gltf-model="url(Model4.glb)" 
+                  rotation="0 0 0">
+        </a-entity>
     </a-scene>
 
     <script src="app.js"></script>
