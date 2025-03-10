@@ -3,8 +3,7 @@
 const videoElement = document.getElementById('video');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
-const model = document.getElementById('model');
-const hand = document.getElementById('hand');
+const modelEntity = document.getElementById('model');
 
 function onResults(results) {
     canvasCtx.save();
@@ -17,14 +16,19 @@ function onResults(results) {
                 {color: '#00FF00', lineWidth: 5});
             drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
 
-            const palm = landmarks[0]; // Landmark telapak tangan (landmark 0)
-            const x = palm.x * canvasElement.width;
-            const y = palm.y * canvasElement.height;
-            const aframeX = (x / canvasElement.width - 0.5) * 2;
-            const aframeY = -(y / canvasElement.height - 0.5) * 2;
+            // Mendapatkan posisi landmark ujung jari telunjuk (landmark 8)
+            if (landmarks[8]) {
+                const landmark = landmarks[8];
+                const x = landmark.x * canvasElement.width;
+                const y = landmark.y * canvasElement.height;
 
-            model.setAttribute('position', `${aframeX} ${aframeY} -1`);
-            hand.setAttribute('position', `${aframeX} ${aframeY} -1`);
+                // Mengonversi posisi piksel ke koordinat A-Frame
+                const aframeX = (x / canvasElement.width - 0.5) * 2; // Normalisasi ke -1 sampai 1
+                const aframeY = -(y / canvasElement.height - 0.5) * 2; // Normalisasi dan balikkan y
+
+                // Mengatur posisi model 3D
+                modelEntity.setAttribute('position', `${aframeX} ${aframeY} -1`); // -1 untuk z agar terlihat
+            }
         }
     }
     canvasCtx.restore();
