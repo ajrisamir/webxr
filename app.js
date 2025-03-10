@@ -3,7 +3,7 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-let previousLandmarks = null; // Menyimpan landmark sebelumnya untuk smoothing
+let previousLandmarks = null;
 
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
@@ -15,7 +15,7 @@ function smoothLandmarks(landmarks) {
         const previousLandmark = previousLandmarks[index];
         if (!previousLandmark) return landmark;
 
-        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7; // Faktor smoothing
+        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
         const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
         const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
 
@@ -34,7 +34,7 @@ function onResults(results) {
 
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
-            const smoothedLandmarks = smoothLandmarks(landmarks); // Smoothing landmark
+            const smoothedLandmarks = smoothLandmarks(landmarks);
             drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS,
                 { color: '#00FF00', lineWidth: 5 });
             drawLandmarks(canvasCtx, smoothedLandmarks, { color: '#FF0000', lineWidth: 2 });
@@ -53,10 +53,10 @@ function onResults(results) {
                 const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * 2;
                 const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * 2;
 
-                modelEntity.setAttribute('position', `${aframeX} ${aframeY} -1`);
+                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
 
-                const rotationX = (thumb.y - indexFinger.y) * 180; // Rotasi berdasarkan perbedaan y
-                const rotationY = (thumb.x - indexFinger.x) * 180; // Rotasi berdasarkan perbedaan x
+                const rotationX = (thumb.y - indexFinger.y) * 180;
+                const rotationY = (thumb.x - indexFinger.x) * 180;
                 modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
@@ -81,13 +81,12 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 640, // Resolusi yang disesuaikan
+    width: 640,
     height: 480,
-    facingMode: "environment" // Menggunakan kamera belakang
+    facingMode: "environment"
 });
 camera.start();
 
-// Penanganan Error
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
 };
