@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scaleY = -((y / canvasElement.height) * 2 - 1);
 
     // Sesuaikan nilai Z untuk membawa model lebih dekat ke kamera
-    const scaleZ = -1;  // Nilai Z ini bisa disesuaikan lebih lanjut agar model lebih dekat ke tangan
+    const scaleZ = -0.5;  // Nilai Z ini bisa disesuaikan lebih lanjut agar model lebih dekat ke tangan
 
     // Jika model terlalu jauh, coba kurangi nilai Z (misalnya -0.5 atau lebih tinggi)
     console.log(`Posisi Model: X: ${scaleX}, Y: ${scaleY}, Z: ${scaleZ}`);
