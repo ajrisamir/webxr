@@ -91,8 +91,7 @@ const camera = new Camera(videoElement, {
         await hands.send({ image: videoElement });
     },
     width: 480,
-    height: 480,
-    facingMode: "environment"
+    height: 480
 });
 camera.start();
 
