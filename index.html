@@ -21,7 +21,7 @@
     <canvas id="output_canvas" width="640" height="480"></canvas>
 
     <a-scene embedded arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best;">
-        <a-marker type="pattern" pattern="hiro">
+        <a-marker type="pattern" preset="hiro">
             <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity>
         </a-marker>
         <a-entity id="hand" geometry="primitive: sphere; radius: 0.05;" material="color: red;" position="0 0 -1"></a-entity>
