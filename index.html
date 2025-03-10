@@ -1,36 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR with Marker</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
-    </style>
-</head>
-<body>
-    <!-- A-Frame AR Scene -->
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Marker untuk Model 3D -->
-        <a-marker preset="hiro">
-            <a-entity id="model-entity" 
-                      gltf-model="url(Model4.glb)" 
-                      scale="0.5 0.5 0.5" 
-                      rotation="0 0 0" 
-                      position="0 0 0">
-            </a-entity>
-        </a-marker>
+document.addEventListener("DOMContentLoaded", async () => {
+    const videoElement = document.createElement("video");
+    const hands = new Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    });
 
-        <!-- Kamera AR -->
-        <a-entity camera></a-entity>
-    </a-scene>
+    hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    });
 
-    <script src="app.js"></script>
-</body>
-</html>
+    hands.onResults(onResults);
+
+    async function setupCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
+            videoElement.srcObject = stream;
+            return new Promise((resolve) => {
+                videoElement.onloadedmetadata = () => {
+                    videoElement.play();
+                    resolve();
+                };
+            });
+        } catch (error) {
+            console.error("❌ Gagal mengakses kamera:", error);
+        }
+    }
+
+    async function processVideoFrame() {
+        await hands.send({ image: videoElement });
+        requestAnimationFrame(processVideoFrame);
+    }
+
+    function onResults(results) {
+        if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) return;
+
+        const hand = results.multiHandLandmarks[0];
+        const palm = hand[9]; // Titik tengah telapak tangan untuk referensi
+
+        // Posisikan model 3D berdasarkan posisi telapak tangan
+        positionModelAtHand(palm.x * canvasElement.width, palm.y * canvasElement.height);
+    }
+
+    // Fungsi untuk menyesuaikan posisi dan skala model 3D pada tangan
+    function positionModelAtHand(x, y) {
+        const modelEntity = document.querySelector("#model-entity");
+
+        // Konversi koordinat (x, y) ke dalam ruang 3D
+        const posX = (x - canvasElement.width / 2) / canvasElement.width * 2;
+        const posY = -(y - canvasElement.height / 2) / canvasElement.height * 2;
+
+        // Posisi model 3D di ruang AR
+        modelEntity.setAttribute("position", `${posX} ${posY} -1`); // Set posisi di depan kamera
+
+        // Batasi scale model agar tidak terlalu besar atau kecil
+        const scale = 1; // Ukuran model tetap
+        modelEntity.setAttribute("scale", `${scale} ${scale} ${scale}`);
+    }
+
+    await setupCamera();
+    processVideoFrame();
+});
