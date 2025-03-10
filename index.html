@@ -23,7 +23,9 @@
     <a-scene embedded arjs>
         <a-camera id="camera" position="0 0 0" look-controls="pointerLockEnabled: true"></a-camera>
         <!-- Ganti bola merah dengan model GLB -->
-        <a-entity id="3d-model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" visible="false"></a-entity> 
+        <a-entity id="3d-model" scale="0.1 0.1 0.1" visible="false">
+            <a-gltf-model src="Model4.glb"></a-gltf-model>
+        </a-entity> 
     </a-scene>
 
     <script src="app.js"></script>
