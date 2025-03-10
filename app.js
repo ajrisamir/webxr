@@ -2,7 +2,6 @@ const videoElement = document.getElementById('video');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
-const loadingMessage = document.getElementById('loading-message');
 
 canvasElement.width = 480;
 canvasElement.height = 480;
@@ -30,31 +29,6 @@ function smoothLandmarks(landmarks) {
     return smoothedLandmarks;
 }
 
-function updateModelTransform(landmarks) {
-    if (landmarks[8] && landmarks[4]) {
-        const indexFinger = landmarks[8];
-        const thumb = landmarks[4];
-
-        const distance = Math.sqrt(
-            Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
-        );
-
-        const scaleFactor = 5;
-        const scale = distance * scaleFactor;
-        modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
-
-        const positionFactor = 2;
-        const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * positionFactor;
-        const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * positionFactor;
-        modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
-
-        const rotationFactor = 180;
-        const rotationX = (thumb.y - indexFinger.y) * rotationFactor;
-        const rotationY = (thumb.x - indexFinger.x) * rotationFactor;
-        modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
-    }
-}
-
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -67,7 +41,27 @@ function onResults(results) {
             drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS,
                 { color: '#00FF00', lineWidth: 5 });
             drawLandmarks(canvasCtx, smoothedLandmarks, { color: '#FF0000', lineWidth: 2 });
-            updateModelTransform(smoothedLandmarks);
+
+            if (smoothedLandmarks[8] && smoothedLandmarks[4]) {
+                const indexFinger = smoothedLandmarks[8];
+                const thumb = smoothedLandmarks[4];
+
+                const distance = Math.sqrt(
+                    Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
+                );
+
+                const scale = distance * 5;
+                modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
+
+                const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * 2;
+                const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * 2;
+
+                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
+
+                const rotationX = (thumb.y - indexFinger.y) * 180;
+                const rotationY = (thumb.x - indexFinger.x) * 180;
+                modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
+            }
         }
     }
     canvasCtx.restore();
@@ -94,15 +88,11 @@ const camera = new Camera(videoElement, {
     height: 480,
     facingMode: "environment"
 });
-
-camera.start().then(()=>{
-    loadingMessage.style.display = 'none';
-});
+camera.start();
 
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
     alert("Kamera tidak dapat diakses. Pastikan kamera terhubung dan izin diberikan.");
-    loadingMessage.textContent = "Error: Kamera tidak dapat diakses.";
 };
 
 modelEntity.addEventListener('model-loaded', () => {
@@ -112,5 +102,4 @@ modelEntity.addEventListener('model-loaded', () => {
 modelEntity.addEventListener('model-error', (error) => {
     console.error("Error loading 3D model:", error);
     alert("Gagal memuat model 3D. Periksa jalur file model.");
-    loadingMessage.textContent = "Error: Gagal memuat model 3D.";
 });
