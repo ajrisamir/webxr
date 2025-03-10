@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script> <!-- Menambahkan A-Frame -->
     <style>
         body { margin: 0; overflow: hidden; }
         video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
@@ -16,6 +17,13 @@
 <body>
     <video id="video" autoplay playsinline style="display: none;"></video>
     <canvas id="output_canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
+
+    <!-- A-Frame scene untuk menampilkan model 3D -->
+    <a-scene embedded arjs>
+        <a-camera id="camera" position="0 0 0" look-controls="pointerLockEnabled: true"></a-camera>
+        <a-sphere id="3d-model" position="0 0 -5" radius="0.1" color="red" visible="false"></a-sphere> <!-- Model 3D lingkaran -->
+    </a-scene>
+
     <script src="app.js"></script>
 </body>
 </html>
