@@ -37,8 +37,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const camera = new Camera(videoElement, {
         onFrame: async () => {
-            console.log("📸 Mengambil frame...");
-            await hands.send({ image: videoElement });
+            console.log("📸 Frame diambil, mengirim ke MediaPipe...");
+            try {
+                await hands.send({ image: videoElement });
+                console.log("✅ Frame berhasil dikirim ke MediaPipe!");
+            } catch (error) {
+                console.error("❌ Gagal mengirim frame ke MediaPipe:", error);
+            }
         },
         width: 640,
         height: 480
