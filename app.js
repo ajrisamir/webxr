@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const videoElement = document.getElementById("video");
     const canvasElement = document.getElementById("output_canvas");
     const canvasCtx = canvasElement.getContext("2d");
-    const handModel = document.getElementById("handModel"); // Model 3D yang ada di A-Frame
 
     // Setup kamera
     async function setupCamera() {
@@ -40,7 +39,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     hands.onResults(onResults);
 
-    // Fungsi ketika hasil deteksi tangan diterima
+    // Inisialisasi scene 3D menggunakan Three.js
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, canvasElement.width / canvasElement.height, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasElement });
+    renderer.setSize(canvasElement.width, canvasElement.height);
+
+    // Tambahkan cahaya
+    const light = new THREE.AmbientLight(0x404040); // Cahaya lembut
+    scene.add(light);
+
+    // Buat model 3D (misalnya bola kecil)
+    const geometry = new THREE.SphereGeometry(0.05, 32, 32); // Bola kecil
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Warna merah
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    camera.position.z = 2;
+
     function onResults(results) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -50,23 +66,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        console.log("📊 Data hasil deteksi tangan diterima!");
         const hand = results.multiHandLandmarks[0];
         const palm = hand[9]; // Titik tengah telapak tangan
         console.log("📍 Telapak tangan di:", palm.x, palm.y);
 
-        // Hitung posisi model berdasarkan koordinat tangan
-        const xPos = (palm.x - 0.5) * 2; // Mengubah dari [0, 1] menjadi [-1, 1]
-        const yPos = (palm.y - 0.5) * 2; // Mengubah dari [0, 1] menjadi [-1, 1]
-        const zPos = -2; // Tentukan jarak model
+        // Gambar lingkaran di atas telapak tangan
+        canvasCtx.fillStyle = "red";
+        canvasCtx.beginPath();
+        canvasCtx.arc(palm.x * canvasElement.width, palm.y * canvasElement.height, 10, 0, 2 * Math.PI);
+        canvasCtx.fill();
 
-        // Perbarui posisi model di A-Frame
-        handModel.setAttribute('position', `${xPos} ${yPos} ${zPos}`);
+        // Update posisi model 3D berdasarkan koordinat telapak tangan
+        sphere.position.x = (palm.x - 0.5) * 2; // Konversi ke rentang (-1, 1)
+        sphere.position.y = -(palm.y - 0.5) * 2; // Konversi ke rentang (-1, 1)
     }
 
-    // Fungsi untuk memproses frame video
     async function processVideoFrame() {
         await hands.send({ image: videoElement });
+        renderer.render(scene, camera);
         requestAnimationFrame(processVideoFrame);
     }
 
