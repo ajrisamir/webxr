@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Tracking AR with Marker</title>
+    <title>Hand Tracking AR - Palm Object</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/ar.js@2.1.5/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
@@ -21,10 +20,8 @@
     <canvas id="output_canvas" width="640" height="480"></canvas>
 
     <a-scene embedded arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best;">
-        <a-marker type="pattern" preset="hiro">
-            <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity>
-        </a-marker>
-        <a-entity id="hand" geometry="primitive: sphere; radius: 0.05;" material="color: red;" position="0 0 -1"></a-entity>
+        <a-entity id="model" gltf-model="url(Model4.glb)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity>
+        <a-entity id="hand" geometry="primitive: sphere; radius: 0.05;" material="color: blue;" position="0 0 -1"></a-entity>
         <a-entity camera></a-entity>
     </a-scene>
 
