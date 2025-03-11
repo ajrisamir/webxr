@@ -3,29 +3,23 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
+// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi dan tanpa ruang kosong
 function resizeElements() {
-    // Maintain the aspect ratio of the video element
-    const videoRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowRatio = window.innerWidth / window.innerHeight;
-
-    if (windowRatio > videoRatio) {
-        videoElement.style.width = '100vw';
-        videoElement.style.height = 'auto';
-    } else {
-        videoElement.style.width = 'auto';
-        videoElement.style.height = '100vh';
-    }
-
-    // Adjust the canvas size based on the video element
-    canvasElement.width = videoElement.clientWidth;
-    canvasElement.height = videoElement.clientHeight;
+    videoElement.style.position = 'fixed';
+    videoElement.style.top = '0';
+    videoElement.style.left = '0';
+    videoElement.style.width = '100vw';
+    videoElement.style.height = '100vh';
+    videoElement.style.objectFit = 'cover';
+    
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = 270px;
     canvasElement.style.position = 'fixed';
-    canvasElement.style.top = `${videoElement.offsetTop}px`;
-    canvasElement.style.left = `${videoElement.offsetLeft}px`;
+    canvasElement.style.top = '0';
+    canvasElement.style.left = '0';
 }
 
 window.addEventListener('resize', resizeElements);
-videoElement.addEventListener('loadedmetadata', resizeElements);
 resizeElements();
 
 let previousLandmarks = null;
