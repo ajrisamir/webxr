@@ -11,17 +11,19 @@ function smoothLandmarks(landmarks) {
         return landmarks;
     }
 
-    // Exponential smoothing
-    const smoothingFactor = 0.7; // Adjustable factor
-    return landmarks.map((landmark, index) => {
+    const smoothedLandmarks = landmarks.map((landmark, index) => {
         const previousLandmark = previousLandmarks[index];
-        const smoothedLandmark = {
-            x: smoothingFactor * landmark.x + (1 - smoothingFactor) * previousLandmark.x,
-            y: smoothingFactor * landmark.y + (1 - smoothingFactor) * previousLandmark.y,
-            z: smoothingFactor * landmark.z + (1 - smoothingFactor) * previousLandmark.z,
-        };
-        return smoothedLandmark;
+        if (!previousLandmark) return landmark;
+
+        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
+        const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
+        const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
+
+        return { x: smoothedX, y: smoothedY, z: smoothedZ };
     });
+
+    previousLandmarks = smoothedLandmarks;
+    return smoothedLandmarks;
 }
 
 function onResults(results) {
@@ -45,12 +47,6 @@ function onResults(results) {
                     Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
                 );
 
-                const thresholdDistance = 0.05; // Threshold to prevent unintentional scaling
-                if (distance < thresholdDistance) {
-                    return; // No interaction if fingers are too close
-                }
-
-                // Scale model based on finger distance
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
@@ -112,13 +108,31 @@ modelEntity.addEventListener('model-error', (error) => {
     document.body.appendChild(errorDiv);
 });
 
-// Use requestAnimationFrame for efficient frame rendering
-function renderFrame() {
-    requestAnimationFrame(renderFrame);
-    if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        // Drawing and processing can be added here for optimization
+function resizeCanvas() {
+    if (!videoElement.videoWidth || !videoElement.videoHeight) {
+        return;
+    }
+
+    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+    const screenAspectRatio = window.innerWidth / window.innerHeight;
+
+    if (videoAspectRatio > screenAspectRatio) {
+        canvasElement.width = window.innerWidth;
+        canvasElement.height = window.innerWidth / videoAspectRatio;
+    } else {
+        canvasElement.width = window.innerHeight * videoAspectRatio;
+        canvasElement.height = window.innerHeight;
     }
 }
 
-requestAnimationFrame(renderFrame);
+window.addEventListener('resize', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
+
+videoElement.addEventListener('loadedmetadata', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
