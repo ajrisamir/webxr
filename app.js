@@ -115,8 +115,14 @@ function resizeCanvas() {
         if (!videoElement.videoWidth || !videoElement.videoHeight) return;
 
         const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerWidth / aspectRatio;
+        // Menyesuaikan ukuran canvas dengan aspect ratio dari video
+        if (window.innerWidth / window.innerHeight > aspectRatio) {
+            canvasElement.width = window.innerHeight * aspectRatio;
+            canvasElement.height = window.innerHeight;
+        } else {
+            canvasElement.width = window.innerWidth;
+            canvasElement.height = window.innerWidth / aspectRatio;
+        }
     });
 }
 
