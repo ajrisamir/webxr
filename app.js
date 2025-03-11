@@ -35,7 +35,7 @@ function resizeElements() {
 
     // Posisikan video dan kanvas di tengah layar jika ada ruang kosong
     const offsetX = (window.innerWidth - videoWidth) / 2;
-    const offsetY = (window.innerHeight - videoHeight) / 2;
+    const offsetY = (window.innerHeight - videoHeight) / 4;
 
     videoElement.style.position = 'absolute';
     videoElement.style.left = `${offsetX}px`;
