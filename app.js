@@ -112,15 +112,3 @@ function resizeCanvas() {
     canvasElement.width = window.innerWidth;
     canvasElement.height = window.innerHeight;
 }
-
-window.addEventListener('resize', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
-});
-
-videoElement.addEventListener('loadedmetadata', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
-});
