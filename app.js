@@ -109,6 +109,10 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
+    if (!videoElement.videoWidth || !videoElement.videoHeight) {
+        return;
+    }
+
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const screenAspectRatio = window.innerWidth / window.innerHeight;
 
