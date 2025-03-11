@@ -3,11 +3,6 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-canvasElement.width = 480;
-canvasElement.height = 720;
-videoElement.width = 480;
-videoElement.height = 720;
-
 let previousLandmarks = null;
 let previousScale = null;
 let previousPosition = null;
@@ -36,10 +31,9 @@ function smoothLandmarks(landmarks) {
 }
 
 function onResults(results) {
-    const aspectRatio = results.image.width / results.image.height;
-const newWidth = canvasElement.height * aspectRatio;
-canvasCtx.drawImage(results.image, (canvasElement.width - newWidth) / 2, 0, newWidth, canvasElement.height);
-
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
@@ -63,7 +57,7 @@ canvasCtx.drawImage(results.image, (canvasElement.width - newWidth) / 2, 0, newW
                 modelEntity.setAttribute('scale', `${smoothedScale} ${smoothedScale} ${smoothedScale}`);
 
                 const aframeX = (indexFinger.x - 0.5) * 2;
-                const aframeY = -(indexFinger.y - 0.5) * 2 * (canvasElement.height / canvasElement.width);
+                const aframeY = -(indexFinger.y - 0.5) * 2;
                 const aframeZ = -indexFinger.z * 2;
                 
                 previousPosition = previousPosition || { x: aframeX, y: aframeY, z: aframeZ };
@@ -102,8 +96,6 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 480,
-    height: 720,
     facingMode: "environment"
 });
 camera.start();
