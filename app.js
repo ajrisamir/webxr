@@ -117,16 +117,23 @@ function resizeCanvas() {
         return;
     }
 
+    // Menentukan rasio aspek video dan layar
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const screenAspectRatio = window.innerWidth / window.innerHeight;
 
     if (videoAspectRatio > screenAspectRatio) {
+        // Jika rasio aspek video lebih besar dari layar, sesuaikan canvas dengan lebar layar
         canvasElement.width = window.innerWidth;
         canvasElement.height = window.innerWidth / videoAspectRatio;
     } else {
+        // Jika rasio aspek layar lebih besar, sesuaikan canvas dengan tinggi layar
         canvasElement.width = window.innerHeight * videoAspectRatio;
         canvasElement.height = window.innerHeight;
     }
+    
+    // Posisi video tetap menutupi seluruh layar tanpa zoom
+    videoElement.width = canvasElement.width;
+    videoElement.height = canvasElement.height;
 }
 
 window.addEventListener('resize', () => {
