@@ -109,20 +109,8 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
-    if (!videoElement.videoWidth || !videoElement.videoHeight) {
-        return;
-    }
-
-    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const screenAspectRatio = window.innerWidth / window.innerHeight;
-
-    if (videoAspectRatio > screenAspectRatio) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerWidth / videoAspectRatio;
-    } else {
-        canvasElement.width = window.innerHeight * videoAspectRatio;
-        canvasElement.height = window.innerHeight;
-    }
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
 }
 
 window.addEventListener('resize', () => {
