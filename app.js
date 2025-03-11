@@ -3,37 +3,48 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Wait for the video to load so we can get its original width and height
+// Tunggu hingga metadata video dimuat
 videoElement.onloadedmetadata = function () {
-    // Set the initial video size based on its aspect ratio
     resizeElements();
 };
 
-// Function to adjust video and canvas sizes while maintaining the aspect ratio
+// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan ukuran layar tanpa menyebabkan pembesaran berlebihan
 function resizeElements() {
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const windowAspectRatio = window.innerWidth / window.innerHeight;
 
-    // Check if the window is wider or taller than the video aspect ratio
+    // Menyesuaikan ukuran video dan kanvas berdasarkan perbandingan rasio aspek
     if (windowAspectRatio > videoAspectRatio) {
-        // Window is wider, so set width to window width and height proportional to video aspect ratio
+        // Jika rasio aspek jendela lebih besar dari video, atur lebar video sesuai lebar jendela, dan sesuaikan tinggi
         videoElement.width = window.innerWidth;
         videoElement.height = window.innerWidth / videoAspectRatio;
     } else {
-        // Window is taller, so set height to window height and width proportional to video aspect ratio
+        // Jika rasio aspek jendela lebih kecil dari video, atur tinggi video sesuai tinggi jendela, dan sesuaikan lebar
         videoElement.height = window.innerHeight;
         videoElement.width = window.innerHeight * videoAspectRatio;
     }
 
-    // Adjust canvas size to match video size
+    // Sesuaikan ukuran kanvas agar sama dengan ukuran video
     canvasElement.width = videoElement.width;
     canvasElement.height = videoElement.height;
+
+    // Posisikan video dan kanvas di tengah layar jika ada ruang kosong
+    const offsetX = (window.innerWidth - videoElement.width) / 2;
+    const offsetY = (window.innerHeight - videoElement.height) / 2;
+
+    videoElement.style.position = 'absolute';
+    videoElement.style.left = `${offsetX}px`;
+    videoElement.style.top = `${offsetY}px`;
+
+    canvasElement.style.position = 'absolute';
+    canvasElement.style.left = `${offsetX}px`;
+    canvasElement.style.top = `${offsetY}px`;
 }
 
-// Call resizeElements on window resize to adjust the sizes dynamically
+// Panggil resizeElements saat ukuran jendela berubah untuk menyesuaikan ukuran video dan kanvas
 window.addEventListener('resize', resizeElements);
 
-// Initial resize when the page is loaded
+// Panggil resizeElements sekali saat halaman dimuat
 resizeElements();
 
 let previousLandmarks = null;
