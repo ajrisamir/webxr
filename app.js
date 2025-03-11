@@ -3,11 +3,37 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Atur ukuran kanvas dan video berdasarkan ukuran layar perangkat
-canvasElement.width = window.innerWidth;
-canvasElement.height = window.innerHeight;
-videoElement.width = window.innerWidth;
-videoElement.height = window.innerHeight;
+// Fungsi untuk menyelaraskan ukuran video dengan ukuran canvas
+function setVideoSize() {
+    const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
+    const canvasAspect = canvasElement.width / canvasElement.height;
+
+    if (canvasAspect > videoAspect) {
+        // Jika canvas lebih lebar dari rasio video, sesuaikan tinggi video
+        videoElement.style.width = 'auto';
+        videoElement.style.height = '100%'; // Mengatur tinggi video sesuai tinggi canvas
+    } else {
+        // Jika canvas lebih tinggi dari rasio video, sesuaikan lebar video
+        videoElement.style.height = 'auto';
+        videoElement.style.width = '100%'; // Mengatur lebar video sesuai lebar canvas
+    }
+}
+
+// Fungsi untuk mengatur ukuran video dan canvas
+function setVideoCanvasSize() {
+    // Menyelaraskan ukuran canvas dengan ukuran jendela perangkat
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
+
+    // Menyesuaikan ukuran video dengan canvas
+    setVideoSize();
+}
+
+// Atur ukuran saat pertama kali dimuat
+setVideoCanvasSize();
+
+// Mengatur ukuran saat jendela berubah
+window.addEventListener('resize', setVideoCanvasSize);
 
 let previousLandmarks = null;
 
