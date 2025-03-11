@@ -7,6 +7,11 @@ let previousLandmarks = null;
 let previousScale = null;
 let previousPosition = null;
 
+videoElement.addEventListener('loadedmetadata', () => {
+    videoElement.width = videoElement.videoWidth;
+    videoElement.height = videoElement.videoHeight;
+});
+
 function lerp(a, b, t) {
     return a * (1 - t) + b * t;
 }
