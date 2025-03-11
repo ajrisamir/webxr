@@ -3,8 +3,22 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
+// Function to set video and canvas sizes to match window size
+function adjustSize() {
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
+
+    videoElement.width = window.innerWidth;
+    videoElement.height = window.innerHeight;
+}
+
+// Adjust sizes initially
+adjustSize();
+
+// Listen for window resize events and adjust the sizes accordingly
+window.addEventListener('resize', adjustSize);
+
 let previousLandmarks = null;
-let videoAspectRatio = 1; // Inisialisasi rasio aspek video
 
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
@@ -70,12 +84,14 @@ const hands = new Hands({
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
     }
 });
+
 hands.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
     minDetectionConfidence: 0.5,
     minTrackingConfidence: 0.5
 });
+
 hands.onResults(onResults);
 
 const camera = new Camera(videoElement, {
@@ -87,14 +103,7 @@ const camera = new Camera(videoElement, {
     facingMode: "environment"
 });
 
-camera.start().then(() => {
-    console.log("Camera started");
-    videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerWidth / videoAspectRatio; // Sesuaikan tinggi canvas
-    videoElement.width = canvasElement.width;
-    videoElement.height = canvasElement.height;
-});
+camera.start();
 
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
@@ -109,10 +118,3 @@ modelEntity.addEventListener('model-error', (error) => {
     console.error("Error loading 3D model:", error);
     alert("Gagal memuat model 3D. Periksa jalur file model.");
 });
-
-window.onload = function() {
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerWidth / videoAspectRatio;
-    videoElement.width = canvasElement.width;
-    videoElement.height = canvasElement.height;
-};
