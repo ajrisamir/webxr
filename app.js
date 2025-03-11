@@ -3,20 +3,32 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Function to set video and canvas sizes to match window size
-function adjustSize() {
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
+// Video's original aspect ratio (if available, otherwise use the window's ratio)
+const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
 
-    videoElement.width = window.innerWidth;
-    videoElement.height = window.innerHeight;
+// Adjust canvas and video sizes based on window size, preserving the aspect ratio
+function resizeElements() {
+    const windowAspectRatio = window.innerWidth / window.innerHeight;
+
+    // If the window is wider than the video aspect ratio, set width to window width
+    // and calculate the height based on the video aspect ratio.
+    if (windowAspectRatio > videoAspectRatio) {
+        videoElement.width = window.innerWidth;
+        videoElement.height = window.innerWidth / videoAspectRatio;
+    } else {
+        // Otherwise, set height to window height and calculate width based on the video aspect ratio
+        videoElement.height = window.innerHeight;
+        videoElement.width = window.innerHeight * videoAspectRatio;
+    }
+
+    // Similarly for canvas
+    canvasElement.width = videoElement.width;
+    canvasElement.height = videoElement.height;
 }
 
-// Adjust sizes initially
-adjustSize();
-
-// Listen for window resize events and adjust the sizes accordingly
-window.addEventListener('resize', adjustSize);
+// Call resizeElements on window resize to adjust the sizes dynamically
+window.addEventListener('resize', resizeElements);
+resizeElements(); // Call once when the page loads
 
 let previousLandmarks = null;
 
@@ -44,14 +56,13 @@ function smoothLandmarks(landmarks) {
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(
-        results.image, 0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
             const smoothedLandmarks = smoothLandmarks(landmarks);
-            drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS,
-                { color: '#00FF00', lineWidth: 5 });
+
+            drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
             drawLandmarks(canvasCtx, smoothedLandmarks, { color: '#FF0000', lineWidth: 2 });
 
             if (smoothedLandmarks[8] && smoothedLandmarks[4]) {
@@ -72,10 +83,12 @@ function onResults(results) {
 
                 const rotationX = (thumb.y - indexFinger.y) * 180;
                 const rotationY = (thumb.x - indexFinger.x) * 180;
+
                 modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
     }
+
     canvasCtx.restore();
 }
 
