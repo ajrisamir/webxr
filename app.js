@@ -3,38 +3,19 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi dan tanpa ruang kosong
-function resizeElements() {
-    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowAspectRatio = window.innerWidth / window.innerHeight;
-
-    // Tentukan dimensi video dan canvas
-    if (videoAspectRatio > windowAspectRatio) {
-        // Jika video lebih lebar dari layar, sesuaikan lebar video
-        videoElement.style.width = '100vw';
-        videoElement.style.height = 'auto'; // Menjaga proporsi tinggi
-    } else {
-        // Jika video lebih tinggi dari layar, sesuaikan tinggi video
-        videoElement.style.height = '100vh';
-        videoElement.style.width = 'auto'; // Menjaga proporsi lebar
-    }
-
-    // Sesuaikan ukuran canvas agar sesuai dengan layar
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
-
-    // Posisi tetap di layar
-    canvasElement.style.position = 'fixed';
-    canvasElement.style.top = '0';
-    canvasElement.style.left = '0';
-}
-
-window.addEventListener('resize', resizeElements);
-resizeElements();
+canvasElement.width = 480;
+canvasElement.height = 720;
+videoElement.width = 480;
+videoElement.height = 720;
 
 let previousLandmarks = null;
+let previousScale = null;
+let previousPosition = null;
 
-// Fungsi untuk memperhalus gerakan landmark
+function lerp(a, b, t) {
+    return a * (1 - t) + b * t;
+}
+
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
         previousLandmarks = landmarks;
@@ -42,31 +23,16 @@ function smoothLandmarks(landmarks) {
     }
 
     const smoothedLandmarks = landmarks.map((landmark, index) => {
-        const previousLandmark = previousLandmarks[index];
-        if (!previousLandmark) return landmark;
-
-        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
-        const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
-        const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
-
-        return { x: smoothedX, y: smoothedY, z: smoothedZ };
+        const previousLandmark = previousLandmarks[index] || landmark;
+        return {
+            x: lerp(previousLandmark.x, landmark.x, 0.3),
+            y: lerp(previousLandmark.y, landmark.y, 0.3),
+            z: lerp(previousLandmark.z, landmark.z, 0.3)
+        };
     });
 
     previousLandmarks = smoothedLandmarks;
     return smoothedLandmarks;
-}
-
-// Fungsi untuk menyesuaikan koordinat landmark berdasarkan ukuran video dan canvas
-function adjustLandmarksForCanvas(landmarks) {
-    const videoWidth = videoElement.videoWidth;
-    const videoHeight = videoElement.videoHeight;
-
-    // Menyesuaikan koordinat berdasarkan rasio video dan ukuran layar
-    return landmarks.map((landmark) => {
-        const adjustedX = landmark.x * window.innerWidth / videoWidth;
-        const adjustedY = landmark.y * window.innerHeight / videoHeight;
-        return { x: adjustedX, y: adjustedY, z: landmark.z };
-    });
 }
 
 function onResults(results) {
@@ -77,62 +43,68 @@ function onResults(results) {
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
             const smoothedLandmarks = smoothLandmarks(landmarks);
-            const adjustedLandmarks = adjustLandmarksForCanvas(smoothedLandmarks);
+            drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+            drawLandmarks(canvasCtx, smoothedLandmarks, { color: '#FF0000', lineWidth: 2 });
 
-            drawConnectors(canvasCtx, adjustedLandmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
-            drawLandmarks(canvasCtx, adjustedLandmarks, { color: '#FF0000', lineWidth: 2 });
-
-            if (adjustedLandmarks[8] && adjustedLandmarks[4]) {
-                const indexFinger = adjustedLandmarks[8];
-                const thumb = adjustedLandmarks[4];
-
+            if (smoothedLandmarks[8] && smoothedLandmarks[4]) {
+                const indexFinger = smoothedLandmarks[8];
+                const thumb = smoothedLandmarks[4];
+                
                 const distance = Math.sqrt(
-                    Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
+                    Math.pow(indexFinger.x - thumb.x, 2) +
+                    Math.pow(indexFinger.y - thumb.y, 2)
                 );
-
-                const scale = distance * 5;
-                modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                
+                const targetScale = distance * 5;
+                previousScale = previousScale || targetScale;
+                const smoothedScale = lerp(previousScale, targetScale, 0.2);
+                previousScale = smoothedScale;
+                modelEntity.setAttribute('scale', `${smoothedScale} ${smoothedScale} ${smoothedScale}`);
 
                 const aframeX = (indexFinger.x - 0.5) * 2;
-                const aframeY = -(indexFinger.y - 0.5) * 2;
+                const aframeY = -(indexFinger.y - 0.5) * 2 * (canvasElement.height / canvasElement.width);
+                const aframeZ = -indexFinger.z * 2;
+                
+                previousPosition = previousPosition || { x: aframeX, y: aframeY, z: aframeZ };
+                const smoothX = lerp(previousPosition.x, aframeX, 0.2);
+                const smoothY = lerp(previousPosition.y, aframeY, 0.2);
+                const smoothZ = lerp(previousPosition.z, aframeZ, 0.2);
+                previousPosition = { x: smoothX, y: smoothY, z: smoothZ };
 
-                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
+                modelEntity.setAttribute('position', `${smoothX} ${smoothY} ${smoothZ}`);
 
-                const rotationX = (thumb.y - indexFinger.y) * 180;
-                const rotationY = (thumb.x - indexFinger.x) * 180;
-
+                const deltaX = thumb.x - indexFinger.x;
+                const deltaY = thumb.y - indexFinger.y;
+                const deltaZ = thumb.z - indexFinger.z;
+                
+                const rotationX = Math.atan2(deltaY, deltaZ) * (180 / Math.PI);
+                const rotationY = Math.atan2(deltaX, deltaZ) * (180 / Math.PI);
                 modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
     }
-
     canvasCtx.restore();
 }
 
 const hands = new Hands({
-    locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-    }
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
-
 hands.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
     minDetectionConfidence: 0.5,
     minTrackingConfidence: 0.5
 });
-
 hands.onResults(onResults);
 
 const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 480,
+    height: 720,
     facingMode: "environment"
 });
-
 camera.start();
 
 camera.onCameraError = (error) => {
