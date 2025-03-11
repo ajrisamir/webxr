@@ -3,19 +3,21 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Fungsi untuk menyelaraskan ukuran video dengan ukuran canvas
+// Fungsi untuk menyelaraskan ukuran video dengan ukuran canvas tanpa distorsi
 function setVideoSize() {
     const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
     const canvasAspect = canvasElement.width / canvasElement.height;
 
+    // Menggunakan object-fit untuk menjaga rasio video
+    videoElement.style.objectFit = 'contain'; // Menjaga proporsi tanpa distorsi
+
+    // Jika canvas lebih tinggi dari video, kita sesuaikan lebar video
     if (canvasAspect > videoAspect) {
-        // Jika canvas lebih lebar dari rasio video, sesuaikan tinggi video
-        videoElement.style.width = 'auto';
-        videoElement.style.height = '100%'; // Mengatur tinggi video sesuai tinggi canvas
+        videoElement.style.width = '100%';
+        videoElement.style.height = 'auto'; // Sesuaikan tinggi secara otomatis
     } else {
-        // Jika canvas lebih tinggi dari rasio video, sesuaikan lebar video
-        videoElement.style.height = 'auto';
-        videoElement.style.width = '100%'; // Mengatur lebar video sesuai lebar canvas
+        videoElement.style.height = '100%';
+        videoElement.style.width = 'auto'; // Sesuaikan lebar secara otomatis
     }
 }
 
