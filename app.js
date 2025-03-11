@@ -36,9 +36,10 @@ function smoothLandmarks(landmarks) {
 }
 
 function onResults(results) {
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(results.image, 0, 0, videoElement.width, videoElement.height);
+    const aspectRatio = results.image.width / results.image.height;
+const newWidth = canvasElement.height * aspectRatio;
+canvasCtx.drawImage(results.image, (canvasElement.width - newWidth) / 2, 0, newWidth, canvasElement.height);
+
 
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
