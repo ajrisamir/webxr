@@ -50,9 +50,9 @@ function onResults(results) {
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                // Perbaikan koordinat posisi model di A-Frame
                 const aframeX = (indexFinger.x - 0.5) * 3;
                 const aframeY = -(indexFinger.y - 0.5) * 3;
+
                 modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
 
                 const rotationX = (thumb.y - indexFinger.y) * 180;
@@ -108,12 +108,31 @@ modelEntity.addEventListener('model-error', (error) => {
     document.body.appendChild(errorDiv);
 });
 
-// Perbaikan resizeCanvas agar menjaga aspek rasio dengan benar
 function resizeCanvas() {
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
+    if (!videoElement.videoWidth || !videoElement.videoHeight) {
+        return;
+    }
+
+    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+    const screenAspectRatio = window.innerWidth / window.innerHeight;
+
+    if (videoAspectRatio > screenAspectRatio) {
+        canvasElement.width = window.innerWidth;
+        canvasElement.height = window.innerWidth / videoAspectRatio;
+    } else {
+        canvasElement.width = window.innerHeight * videoAspectRatio;
+        canvasElement.height = window.innerHeight;
+    }
 }
 
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
 
-videoElement.addEventListener('loadedmetadata', resizeCanvas);
+videoElement.addEventListener('loadedmetadata', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
