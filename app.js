@@ -5,49 +5,29 @@ const modelEntity = document.getElementById('model');
 
 // Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan ukuran layar tanpa menyebabkan pembesaran berlebihan
 function resizeElements() {
-    // Pastikan metadata video sudah dimuat
-    if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
-        return; // Jika metadata belum dimuat, keluar dari fungsi
-    }
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
 
-    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowAspectRatio = window.innerWidth / window.innerHeight;
+    // Atur ukuran video dan kanvas agar sesuai dengan ukuran jendela
+    videoElement.width = windowWidth;
+    videoElement.height = windowHeight;
+    canvasElement.width = windowWidth;
+    canvasElement.height = windowHeight;
 
-    let videoWidth, videoHeight;
-
-    if (windowAspectRatio > videoAspectRatio) {
-        // Jika jendela lebih lebar, atur tinggi video sesuai tinggi jendela
-        videoHeight = window.innerHeight;
-        videoWidth = videoHeight * videoAspectRatio;
-    } else {
-        // Jika jendela lebih tinggi atau sama, atur lebar video sesuai lebar jendela
-        videoWidth = window.innerWidth;
-        videoHeight = videoWidth / videoAspectRatio;
-    }
-
-    // Atur ukuran video dan kanvas
-    videoElement.width = videoWidth;
-    videoElement.height = videoHeight;
-    canvasElement.width = videoWidth;
-    canvasElement.height = videoHeight;
-
-    // Posisikan video dan kanvas di tengah layar
-    const offsetX = (window.innerWidth - videoWidth) / 2;
-    const offsetY = (window.innerHeight - videoHeight) / 2;
-
+    // Posisikan video dan kanvas di atas scene A-Frame
     videoElement.style.position = 'absolute';
-    videoElement.style.left = `${offsetX}px`;
-    videoElement.style.top = `${offsetY}px`;
+    videoElement.style.left = '0px';
+    videoElement.style.top = '0px';
     canvasElement.style.position = 'absolute';
-    canvasElement.style.left = `${offsetX}px`;
-    canvasElement.style.top = `${offsetY}px`;
+    canvasElement.style.left = '0px';
+    canvasElement.style.top = '0px';
 }
 
 // Panggil resizeElements saat ukuran jendela berubah untuk menyesuaikan ukuran video dan kanvas
 window.addEventListener('resize', resizeElements);
 
-// Panggil resizeElements sekali saat metadata video dimuat
-videoElement.onloadedmetadata = resizeElements;
+// Panggil resizeElements sekali saat halaman dimuat
+window.addEventListener('load', resizeElements);
 
 let previousLandmarks = null;
 
