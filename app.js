@@ -53,11 +53,6 @@ function onResults(results) {
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * 2;
-                const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * 2;
-
-                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
-
                 const rotationX = (thumb.y - indexFinger.y) * 180;
                 const rotationY = (thumb.x - indexFinger.x) * 180;
                 modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
