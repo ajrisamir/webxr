@@ -4,7 +4,7 @@ const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
 canvasElement.width = 480;
-canvasElement.height = 480;
+canvasElement.height = 720;
 
 let previousLandmarks = null;
 
@@ -85,7 +85,7 @@ const camera = new Camera(videoElement, {
         await hands.send({ image: videoElement });
     },
     width: 480,
-    height: 480,
+    height: 720,
     facingMode: "environment"
 });
 camera.start();
