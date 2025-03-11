@@ -19,7 +19,7 @@ function resizeElements() {
         videoElement.style.width = 'auto'; // Menjaga proporsi lebar
     }
 
-    // Sesuaikan ukuran canvas
+    // Sesuaikan ukuran canvas agar sesuai dengan layar
     canvasElement.width = window.innerWidth;
     canvasElement.height = window.innerHeight;
 
@@ -34,6 +34,7 @@ resizeElements();
 
 let previousLandmarks = null;
 
+// Fungsi untuk memperhalus gerakan landmark
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
         previousLandmarks = landmarks;
@@ -55,11 +56,12 @@ function smoothLandmarks(landmarks) {
     return smoothedLandmarks;
 }
 
-// Sesuaikan koordinat landmark berdasarkan ukuran video dan canvas
+// Fungsi untuk menyesuaikan koordinat landmark berdasarkan ukuran video dan canvas
 function adjustLandmarksForCanvas(landmarks) {
     const videoWidth = videoElement.videoWidth;
     const videoHeight = videoElement.videoHeight;
 
+    // Menyesuaikan koordinat berdasarkan rasio video dan ukuran layar
     return landmarks.map((landmark) => {
         const adjustedX = landmark.x * window.innerWidth / videoWidth;
         const adjustedY = landmark.y * window.innerHeight / videoHeight;
