@@ -13,7 +13,7 @@ function resizeElements() {
     videoElement.style.objectFit = 'cover';
     
     canvasElement.width = window.innerWidth;
-    canvasElement.height = 270px;
+    canvasElement.height = window.innerHeight;
     canvasElement.style.position = 'fixed';
     canvasElement.style.top = '0';
     canvasElement.style.left = '0';
