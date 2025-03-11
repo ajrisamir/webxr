@@ -3,6 +3,9 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
+canvasElement.width = 480;
+canvasElement.height = 480;
+
 let previousLandmarks = null;
 
 function smoothLandmarks(landmarks) {
@@ -50,8 +53,8 @@ function onResults(results) {
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                const aframeX = (indexFinger.x * canvasElement.width / window.innerWidth - 0.5) * 2;
-                const aframeY = -(indexFinger.y * canvasElement.height / window.innerHeight - 0.5) * 2;
+                const aframeX = (indexFinger.x * canvasElement.width / canvasElement.width - 0.5) * 2;
+                const aframeY = -(indexFinger.y * canvasElement.height / canvasElement.height - 0.5) * 2;
 
                 modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
 
@@ -81,19 +84,15 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 480,
+    height: 480,
     facingMode: "environment"
 });
-
 camera.start();
 
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = 'Kamera tidak dapat diakses. Pastikan kamera terhubung dan izin diberikan.';
-    document.body.appendChild(errorDiv);
+    alert("Kamera tidak dapat diakses. Pastikan kamera terhubung dan izin diberikan.");
 };
 
 modelEntity.addEventListener('model-loaded', () => {
@@ -102,37 +101,5 @@ modelEntity.addEventListener('model-loaded', () => {
 
 modelEntity.addEventListener('model-error', (error) => {
     console.error("Error loading 3D model:", error);
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = 'Gagal memuat model 3D. Periksa jalur file model.';
-    document.body.appendChild(errorDiv);
-});
-
-function resizeCanvas() {
-    if (!videoElement.videoWidth || !videoElement.videoHeight) {
-        return;
-    }
-
-    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const screenAspectRatio = window.innerWidth / window.innerHeight;
-
-    if (videoAspectRatio > screenAspectRatio) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerWidth / videoAspectRatio;
-    } else {
-        canvasElement.width = window.innerHeight * videoAspectRatio;
-        canvasElement.height = window.innerHeight;
-    }
-}
-
-window.addEventListener('resize', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
-});
-
-videoElement.addEventListener('loadedmetadata', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
+    alert("Gagal memuat model 3D. Periksa jalur file model.");
 });
