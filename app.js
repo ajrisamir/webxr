@@ -116,13 +116,25 @@ function resizeCanvas() {
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const screenAspectRatio = window.innerWidth / window.innerHeight;
 
+    let canvasWidth, canvasHeight;
+
     if (videoAspectRatio > screenAspectRatio) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerWidth / videoAspectRatio;
+        // Video lebih lebar dari layar
+        canvasWidth = window.innerWidth;
+        canvasHeight = window.innerWidth / videoAspectRatio;
     } else {
-        canvasElement.width = window.innerHeight * videoAspectRatio;
-        canvasElement.height = window.innerHeight;
+        // Video lebih tinggi dari layar
+        canvasWidth = window.innerHeight * videoAspectRatio;
+        canvasHeight = window.innerHeight;
     }
+
+    canvasElement.width = canvasWidth;
+    canvasElement.height = canvasHeight;
+
+    // Pastikan canvas tetap berada di tengah layar
+    canvasElement.style.position = 'absolute';
+    canvasElement.style.left = `${(window.innerWidth - canvasWidth) / 2}px`;
+    canvasElement.style.top = `${(window.innerHeight - canvasHeight) / 2}px`;
 }
 
 window.addEventListener('resize', () => {
