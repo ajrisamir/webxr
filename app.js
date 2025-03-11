@@ -3,20 +3,17 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi
+// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi dan tanpa ruang kosong
 function resizeElements() {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    
     videoElement.style.position = 'fixed';
     videoElement.style.top = '0';
     videoElement.style.left = '0';
     videoElement.style.width = '100vw';
     videoElement.style.height = '100vh';
     videoElement.style.objectFit = 'cover';
-
-    canvasElement.width = windowWidth;
-    canvasElement.height = windowHeight;
+    
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
     canvasElement.style.position = 'fixed';
     canvasElement.style.top = '0';
     canvasElement.style.left = '0';
@@ -33,14 +30,19 @@ function smoothLandmarks(landmarks) {
         return landmarks;
     }
 
-    return landmarks.map((landmark, index) => {
-        const previousLandmark = previousLandmarks[index] || landmark;
-        return {
-            x: landmark.x * 0.3 + previousLandmark.x * 0.7,
-            y: landmark.y * 0.3 + previousLandmark.y * 0.7,
-            z: landmark.z * 0.3 + previousLandmark.z * 0.7
-        };
+    const smoothedLandmarks = landmarks.map((landmark, index) => {
+        const previousLandmark = previousLandmarks[index];
+        if (!previousLandmark) return landmark;
+
+        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
+        const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
+        const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
+
+        return { x: smoothedX, y: smoothedY, z: smoothedZ };
     });
+
+    previousLandmarks = smoothedLandmarks;
+    return smoothedLandmarks;
 }
 
 function onResults(results) {
@@ -59,14 +61,22 @@ function onResults(results) {
                 const indexFinger = smoothedLandmarks[8];
                 const thumb = smoothedLandmarks[4];
 
-                const distance = Math.hypot(indexFinger.x - thumb.x, indexFinger.y - thumb.y);
+                const distance = Math.sqrt(
+                    Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
+                );
+
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                const aframeX = (indexFinger.x - 0.5) * 3;
-                const aframeY = -(indexFinger.y - 0.5) * 3;
+                const aframeX = (indexFinger.x - 0.5) * 2;
+                const aframeY = -(indexFinger.y - 0.5) * 2;
 
-                modelEntity.setAttribute('position', `${aframeX} ${aframeY} -3`);
+                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
+
+                const rotationX = (thumb.y - indexFinger.y) * 180;
+                const rotationY = (thumb.x - indexFinger.x) * 180;
+
+                modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
     }
@@ -75,7 +85,9 @@ function onResults(results) {
 }
 
 const hands = new Hands({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }
 });
 
 hands.setOptions({
