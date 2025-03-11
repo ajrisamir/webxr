@@ -11,8 +11,8 @@ function adjustVideoCanvasSize() {
     videoElement.width = width;
     videoElement.height = height;
 
-    canvasElement.width = width;
-    canvasElement.height = height;
+    canvasElement.width = videoElement.width;
+    canvasElement.height = videoElement.height;
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
