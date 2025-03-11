@@ -7,9 +7,6 @@ const modelEntity = document.getElementById('model');
 function adjustVideoCanvasSize() {
     const width = window.innerWidth;  // Lebar layar
     const height = window.innerHeight;  // Tinggi layar
-
-    videoElement.width = width;
-    videoElement.height = height;
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
