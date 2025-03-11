@@ -50,13 +50,15 @@ function onResults(results) {
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                const aframeX = (indexFinger.x - 0.5) * 3;
-                const aframeY = -(indexFinger.y - 0.5) * 3;
+                // Konversi posisi ke dalam skala AR.js
+                const aframeX = (indexFinger.x - 0.5) * 2;
+                const aframeY = -(indexFinger.y - 0.5) * 2;
 
                 modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
 
-                const rotationX = (thumb.y - indexFinger.y) * 180;
-                const rotationY = (thumb.x - indexFinger.x) * 180;
+                // Perhitungan rotasi menggunakan Math.atan2
+                const rotationX = Math.atan2(thumb.y - indexFinger.y, thumb.z - indexFinger.z) * (180 / Math.PI);
+                const rotationY = Math.atan2(thumb.x - indexFinger.x, thumb.z - indexFinger.z) * (180 / Math.PI);
                 modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
@@ -109,6 +111,23 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
+    requestAnimationFrame(() => {
+        if (!videoElement.videoWidth || !videoElement.videoHeight) return;
+
+        const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+        canvasElement.width = window.innerWidth;
+        canvasElement.height = window.innerWidth / aspectRatio;
+    });
 }
+
+window.addEventListener('resize', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
+
+videoElement.addEventListener('loadedmetadata', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
