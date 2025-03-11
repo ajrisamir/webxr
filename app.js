@@ -3,39 +3,20 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Tunggu hingga metadata video dimuat
-videoElement.onloadedmetadata = function () {
-    resizeElements();
-};
-
-// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan ukuran layar tanpa distorsi dan tanpa ruang kosong
+// Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi dan tanpa ruang kosong
 function resizeElements() {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const videoRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowRatio = windowWidth / windowHeight;
-
-    let videoWidth, videoHeight;
-
-    if (windowRatio > videoRatio) {
-        videoHeight = windowHeight;
-        videoWidth = videoHeight * videoRatio;
-    } else {
-        videoWidth = windowWidth;
-        videoHeight = videoWidth / videoRatio;
-    }
-
-    videoElement.style.width = `${videoWidth}px`;
-    videoElement.style.height = `${videoHeight}px`;
-    videoElement.style.left = `${(windowWidth - videoWidth) / 2}px`;
-    videoElement.style.top = `${(windowHeight - videoHeight) / 2}px`;
-
-    canvasElement.width = videoWidth;
-    canvasElement.height = videoHeight;
-    canvasElement.style.width = `${videoWidth}px`;
-    canvasElement.style.height = `${videoHeight}px`;
-    canvasElement.style.left = `${(windowWidth - videoWidth) / 2}px`;
-    canvasElement.style.top = `${(windowHeight - videoHeight) / 2}px`;
+    videoElement.style.position = 'fixed';
+    videoElement.style.top = '0';
+    videoElement.style.left = '0';
+    videoElement.style.width = '100vw';
+    videoElement.style.height = '100vh';
+    videoElement.style.objectFit = 'cover';
+    
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
+    canvasElement.style.position = 'fixed';
+    canvasElement.style.top = '0';
+    canvasElement.style.left = '0';
 }
 
 window.addEventListener('resize', resizeElements);
