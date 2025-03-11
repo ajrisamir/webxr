@@ -3,32 +3,38 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Video's original aspect ratio (if available, otherwise use the window's ratio)
-const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+// Wait for the video to load so we can get its original width and height
+videoElement.onloadedmetadata = function () {
+    // Set the initial video size based on its aspect ratio
+    resizeElements();
+};
 
-// Adjust canvas and video sizes based on window size, preserving the aspect ratio
+// Function to adjust video and canvas sizes while maintaining the aspect ratio
 function resizeElements() {
+    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const windowAspectRatio = window.innerWidth / window.innerHeight;
 
-    // If the window is wider than the video aspect ratio, set width to window width
-    // and calculate the height based on the video aspect ratio.
+    // Check if the window is wider or taller than the video aspect ratio
     if (windowAspectRatio > videoAspectRatio) {
+        // Window is wider, so set width to window width and height proportional to video aspect ratio
         videoElement.width = window.innerWidth;
         videoElement.height = window.innerWidth / videoAspectRatio;
     } else {
-        // Otherwise, set height to window height and calculate width based on the video aspect ratio
+        // Window is taller, so set height to window height and width proportional to video aspect ratio
         videoElement.height = window.innerHeight;
         videoElement.width = window.innerHeight * videoAspectRatio;
     }
 
-    // Similarly for canvas
+    // Adjust canvas size to match video size
     canvasElement.width = videoElement.width;
     canvasElement.height = videoElement.height;
 }
 
 // Call resizeElements on window resize to adjust the sizes dynamically
 window.addEventListener('resize', resizeElements);
-resizeElements(); // Call once when the page loads
+
+// Initial resize when the page is loaded
+resizeElements();
 
 let previousLandmarks = null;
 
