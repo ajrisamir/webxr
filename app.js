@@ -7,9 +7,6 @@ let previousLandmarks = null;
 let previousScale = null;
 let previousPosition = null;
 
-canvasElement.width = 480;  // Lebar canvas
-canvasElement.height = 720; // Tinggi canvas
-
 // Fungsi untuk melakukan smoothing pada landmarks tangan
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
@@ -41,7 +38,7 @@ function lerp(a, b, t) {
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(results.image, 0, 0, videoElement.videoWidth, videoElement.videoHeight); // Menyesuaikan dengan ukuran asli video
+    canvasCtx.drawImage(results.image, 0, 0); // Tidak ada pengaturan ukuran khusus di sini
 
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
@@ -111,8 +108,6 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 480,
-    height: 720,
     facingMode: "environment"
 });
 camera.start();
