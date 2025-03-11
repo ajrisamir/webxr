@@ -3,13 +3,8 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Atur ukuran kanvas dan video berdasarkan ukuran layar perangkat
-canvasElement.width = window.innerWidth;
-canvasElement.height = window.innerHeight;
-videoElement.width = window.innerWidth;
-videoElement.height = window.innerHeight;
-
 let previousLandmarks = null;
+let videoAspectRatio = 1; // Inisialisasi rasio aspek video
 
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
@@ -91,7 +86,15 @@ const camera = new Camera(videoElement, {
     height: window.innerHeight,
     facingMode: "environment"
 });
-camera.start();
+
+camera.start().then(() => {
+    console.log("Camera started");
+    videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerWidth / videoAspectRatio; // Sesuaikan tinggi canvas
+    videoElement.width = canvasElement.width;
+    videoElement.height = canvasElement.height;
+});
 
 camera.onCameraError = (error) => {
     console.error("Error accessing camera:", error);
@@ -106,3 +109,10 @@ modelEntity.addEventListener('model-error', (error) => {
     console.error("Error loading 3D model:", error);
     alert("Gagal memuat model 3D. Periksa jalur file model.");
 });
+
+window.onload = function() {
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerWidth / videoAspectRatio;
+    videoElement.width = canvasElement.width;
+    videoElement.height = canvasElement.height;
+};
