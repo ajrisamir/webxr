@@ -113,41 +113,19 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1; // Adjust for high-DPI screens
-    if (!videoElement.videoWidth || !videoElement.videoHeight) {
-        return;
-    }
+    const dpr = window.devicePixelRatio || 1;
+    canvasElement.width = window.innerWidth * dpr;
+    canvasElement.height = window.innerHeight * dpr;
 
-    // Menentukan rasio aspek video dan layar
-    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const screenAspectRatio = window.innerWidth / window.innerHeight;
+    videoElement.width = window.innerWidth;
+    videoElement.height = window.innerHeight;
 
-    if (videoAspectRatio > screenAspectRatio) {
-        // Jika rasio aspek video lebih besar dari layar, sesuaikan canvas dengan lebar layar
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerWidth / videoAspectRatio;
-    } else {
-        // Jika rasio aspek layar lebih besar, sesuaikan canvas dengan tinggi layar
-        canvasElement.width = window.innerHeight * videoAspectRatio;
-        canvasElement.height = window.innerHeight;
-    }
-    
-    // Posisi video tetap menutupi seluruh layar tanpa zoom
-    videoElement.width = canvasElement.width;
-    videoElement.height = canvasElement.height;
+    videoElement.style.width = '100%';
+    videoElement.style.height = '100%';
 }
 
-window.addEventListener('resize', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
-});
-
-videoElement.addEventListener('loadedmetadata', () => {
-    if (videoElement.videoWidth && videoElement.videoHeight) {
-        resizeCanvas();
-    }
-});
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 // Use requestAnimationFrame for efficient frame rendering
 function renderFrame() {
