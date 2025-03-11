@@ -2,37 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hand Tracking AR dengan Marker</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <!--
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-    -->
-    <script src="https://cdn.jsdelivr.net/npm/ar.js@2.2.2/aframe/build/aframe-ar.js"></script>
-    
     <style>
-        body { margin: 0; overflow: hidden; }
-        video { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; }
+        body { margin: 0; overflow: hidden; touch-action: none; }
+        a-scene { width: 100%; height: 100%; }
+        video { position: absolute; top: 0; left: 0; display: none; }
         canvas { position: absolute; top: 0; left: 0; }
-        a-scene { position: absolute; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
-    <video id="video" autoplay playsinline style="display: none;"></video>
-    <canvas id="output_canvas" width="480" height="480"></canvas>
-
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <a-marker type="pattern" url="pattern-marker.patt">
-            <a-entity id="model" position="-1 0 0" scale="0.5 0.5 0.5">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="output_canvas"></canvas>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
+        <a-marker type="pattern" url="marker.patt">
+            <a-entity id="model" position="0 0 0" scale="0.5 0.5 0.5">
                 <a-gltf-model src="Model4.glb"></a-gltf-model>
             </a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
-
     <script src="app.js"></script>
 </body>
 </html>
