@@ -3,8 +3,39 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-canvasElement.width = 480;
-canvasElement.height = 480;
+// Fungsi untuk menyesuaikan rasio aspek canvas dan video
+function adjustAspectRatio() {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+        const screenAspectRatio = window.innerWidth / window.innerHeight;
+
+        if (videoAspectRatio > screenAspectRatio) {
+            // Video lebih lebar dari layar
+            canvasElement.width = window.innerWidth;
+            canvasElement.height = window.innerWidth / videoAspectRatio;
+            videoElement.style.width = '100%';
+            videoElement.style.height = 'auto';
+        } else {
+            // Video lebih tinggi dari layar
+            canvasElement.width = window.innerHeight * videoAspectRatio;
+            canvasElement.height = window.innerHeight;
+            videoElement.style.width = 'auto';
+            videoElement.style.height = '100%';
+        }
+
+        // Pusatkan video
+        videoElement.style.position = 'fixed';
+        videoElement.style.top = '50%';
+        videoElement.style.left = '50%';
+        videoElement.style.transform = 'translate(-50%, -50%)';
+    }
+}
+
+// Panggil fungsi adjustAspectRatio saat video dimuat
+videoElement.addEventListener('loadedmetadata', adjustAspectRatio);
+
+// Panggil fungsi adjustAspectRatio saat ukuran layar berubah
+window.addEventListener('resize', adjustAspectRatio);
 
 let previousLandmarks = null;
 
