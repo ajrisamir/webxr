@@ -3,11 +3,6 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Tunggu hingga metadata video dimuat
-videoElement.onloadedmetadata = function () {
-    resizeElements();
-};
-
 // Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan ukuran layar tanpa menyebabkan pembesaran berlebihan
 function resizeElements() {
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
@@ -18,12 +13,12 @@ function resizeElements() {
     // Menyesuaikan ukuran video dan kanvas berdasarkan perbandingan rasio aspek
     if (windowAspectRatio > videoAspectRatio) {
         // Jika rasio aspek jendela lebih besar dari video, atur tinggi video sesuai tinggi jendela, dan sesuaikan lebar
-        videoHeight = window.innerHeight;  // Set height to window's height
-        videoWidth = window.innerHeight * videoAspectRatio;  // Adjust width accordingly
+        videoHeight = window.innerHeight;
+        videoWidth = window.innerHeight * videoAspectRatio;
     } else {
         // Jika rasio aspek jendela lebih kecil dari video, atur lebar video sesuai lebar jendela, dan sesuaikan tinggi
-        videoWidth = window.innerWidth;  // Set width to window's width
-        videoHeight = window.innerWidth / videoAspectRatio;  // Adjust height accordingly
+        videoWidth = window.innerWidth;
+        videoHeight = window.innerWidth / videoAspectRatio;
     }
 
     // Atur ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi
@@ -33,7 +28,7 @@ function resizeElements() {
     canvasElement.width = videoWidth;
     canvasElement.height = videoHeight;
 
-    // Posisikan video dan kanvas di tengah layar jika ada ruang kosong
+    // Posisikan video dan kanvas di tengah layar
     const offsetX = (window.innerWidth - videoWidth) / 2;
     const offsetY = (window.innerHeight - videoHeight) / 2;
 
@@ -49,8 +44,8 @@ function resizeElements() {
 // Panggil resizeElements saat ukuran jendela berubah untuk menyesuaikan ukuran video dan kanvas
 window.addEventListener('resize', resizeElements);
 
-// Panggil resizeElements sekali saat halaman dimuat
-resizeElements();
+// Panggil resizeElements sekali saat metadata video dimuat
+videoElement.onloadedmetadata = resizeElements;
 
 let previousLandmarks = null;
 
