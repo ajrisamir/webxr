@@ -12,7 +12,14 @@
     <style>
         body { margin: 0; overflow: hidden; touch-action: none; }
         a-scene { width: 100%; height: 100%; }
-        video { position: absolute; top: 0; left: 0; display: none; }
+        video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;  /* Menjaga rasio aspek video */
+}
         canvas { position: absolute; top: 0; left: 0; }
     </style>
 </head>
