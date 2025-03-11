@@ -5,20 +5,30 @@ const modelEntity = document.getElementById('model');
 
 // Fungsi untuk menyelaraskan ukuran video dengan ukuran canvas tanpa distorsi
 function setVideoSize() {
-    const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
-    const canvasAspect = canvasElement.width / canvasElement.height;
+    const videoAspect = videoElement.videoWidth / videoElement.videoHeight; // Rasio aspek video
+    const canvasAspect = canvasElement.width / canvasElement.height; // Rasio aspek canvas
 
-    // Menggunakan object-fit untuk menjaga rasio video
-    videoElement.style.objectFit = 'contain'; // Menjaga proporsi tanpa distorsi
+    let videoWidth, videoHeight;
 
-    // Jika canvas lebih tinggi dari video, kita sesuaikan lebar video
+    // Menyesuaikan ukuran video dengan ukuran canvas tanpa distorsi
     if (canvasAspect > videoAspect) {
-        videoElement.style.width = '100%';
-        videoElement.style.height = 'auto'; // Sesuaikan tinggi secara otomatis
+        // Jika canvas lebih lebar dari rasio video, sesuaikan tinggi video
+        videoHeight = canvasElement.height;
+        videoWidth = videoHeight * videoAspect;
     } else {
-        videoElement.style.height = '100%';
-        videoElement.style.width = 'auto'; // Sesuaikan lebar secara otomatis
+        // Jika canvas lebih tinggi dari rasio video, sesuaikan lebar video
+        videoWidth = canvasElement.width;
+        videoHeight = videoWidth / videoAspect;
     }
+
+    // Mengatur ukuran video
+    videoElement.style.width = `${videoWidth}px`;
+    videoElement.style.height = `${videoHeight}px`;
+
+    // Posisi video di tengah-tengah canvas
+    videoElement.style.position = 'absolute';
+    videoElement.style.top = `${(canvasElement.height - videoHeight) / 2}px`;
+    videoElement.style.left = `${(canvasElement.width - videoWidth) / 2}px`;
 }
 
 // Fungsi untuk mengatur ukuran video dan canvas
