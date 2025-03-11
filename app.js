@@ -13,24 +13,29 @@ function resizeElements() {
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
     const windowAspectRatio = window.innerWidth / window.innerHeight;
 
+    let videoWidth, videoHeight;
+
     // Menyesuaikan ukuran video dan kanvas berdasarkan perbandingan rasio aspek
     if (windowAspectRatio > videoAspectRatio) {
-        // Jika rasio aspek jendela lebih besar dari video, atur lebar video sesuai lebar jendela, dan sesuaikan tinggi
-        videoElement.width = window.innerWidth;
-        videoElement.height = window.innerWidth / videoAspectRatio;
+        // Jika rasio aspek jendela lebih besar dari video, atur tinggi video sesuai tinggi jendela, dan sesuaikan lebar
+        videoHeight = window.innerHeight;
+        videoWidth = window.innerHeight * videoAspectRatio;
     } else {
-        // Jika rasio aspek jendela lebih kecil dari video, atur tinggi video sesuai tinggi jendela, dan sesuaikan lebar
-        videoElement.height = window.innerHeight;
-        videoElement.width = window.innerHeight * videoAspectRatio;
+        // Jika rasio aspek jendela lebih kecil dari video, atur lebar video sesuai lebar jendela, dan sesuaikan tinggi
+        videoWidth = window.innerWidth;
+        videoHeight = window.innerWidth / videoAspectRatio;
     }
 
-    // Sesuaikan ukuran kanvas agar sama dengan ukuran video
-    canvasElement.width = videoElement.width;
-    canvasElement.height = videoElement.height;
+    // Atur ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi
+    videoElement.width = videoWidth;
+    videoElement.height = videoHeight;
+
+    canvasElement.width = videoWidth;
+    canvasElement.height = videoHeight;
 
     // Posisikan video dan kanvas di tengah layar jika ada ruang kosong
-    const offsetX = (window.innerWidth - videoElement.width) / 2;
-    const offsetY = (window.innerHeight - videoElement.height) / 2;
+    const offsetX = (window.innerWidth - videoWidth) / 2;
+    const offsetY = (window.innerHeight - videoHeight) / 2;
 
     videoElement.style.position = 'absolute';
     videoElement.style.left = `${offsetX}px`;
