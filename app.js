@@ -5,8 +5,12 @@ const modelEntity = document.getElementById('model');
 
 // Set video dan canvas agar menyesuaikan dengan ukuran layar ponsel
 function adjustVideoCanvasSize() {
-    const width = window.innerWidth;  // Lebar layar
-    const height = window.innerHeight;  // Tinggi layar
+    const width = window.innerWidth;  // 10% lebih besar dari lebar layar
+    const height = window.innerHeight * 1.1; // 10% lebih besar dari tinggi layar
+
+    // Atur ukuran video sesuai dengan ukuran layar + 10%
+    videoElement.width = width;
+    videoElement.height = height;
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
