@@ -112,21 +112,6 @@ modelEntity.addEventListener('model-error', (error) => {
     document.body.appendChild(errorDiv);
 });
 
-function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    canvasElement.width = window.innerWidth * dpr;
-    canvasElement.height = window.innerHeight * dpr;
-
-    videoElement.width = window.innerWidth;
-    videoElement.height = window.innerHeight;
-
-    videoElement.style.width = '100%';
-    videoElement.style.height = '100%';
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
 // Use requestAnimationFrame for efficient frame rendering
 function renderFrame() {
     requestAnimationFrame(renderFrame);
