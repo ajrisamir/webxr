@@ -11,17 +11,17 @@ function resizeElements() {
     }
 
     const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    const windowAspectRatio = window.innerWidth / window.innerHeight;
 
     let videoWidth, videoHeight;
 
-    // Sesuaikan ukuran video berdasarkan rasio aspek video asli
-    if (windowWidth / windowHeight > videoAspectRatio) {
-        videoHeight = windowHeight;
+    if (windowAspectRatio > videoAspectRatio) {
+        // Jika jendela lebih lebar, atur tinggi video sesuai tinggi jendela
+        videoHeight = window.innerHeight;
         videoWidth = videoHeight * videoAspectRatio;
     } else {
-        videoWidth = windowWidth;
+        // Jika jendela lebih tinggi atau sama, atur lebar video sesuai lebar jendela
+        videoWidth = window.innerWidth;
         videoHeight = videoWidth / videoAspectRatio;
     }
 
@@ -32,8 +32,8 @@ function resizeElements() {
     canvasElement.height = videoHeight;
 
     // Posisikan video dan kanvas di tengah layar
-    const offsetX = (windowWidth - videoWidth) / 2;
-    const offsetY = (windowHeight - videoHeight) / 2;
+    const offsetX = (window.innerWidth - videoWidth) / 2;
+    const offsetY = (window.innerHeight - videoHeight) / 2;
 
     videoElement.style.position = 'absolute';
     videoElement.style.left = `${offsetX}px`;
