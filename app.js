@@ -18,12 +18,12 @@ function resizeElements() {
     // Menyesuaikan ukuran video dan kanvas berdasarkan perbandingan rasio aspek
     if (windowAspectRatio > videoAspectRatio) {
         // Jika rasio aspek jendela lebih besar dari video, atur tinggi video sesuai tinggi jendela, dan sesuaikan lebar
-        videoHeight = window.innerHeight;
-        videoWidth = window.innerHeight * videoAspectRatio;
+        videoHeight = window.innerHeight;  // Set height to window's height
+        videoWidth = window.innerHeight * videoAspectRatio;  // Adjust width accordingly
     } else {
         // Jika rasio aspek jendela lebih kecil dari video, atur lebar video sesuai lebar jendela, dan sesuaikan tinggi
-        videoWidth = window.innerWidth;
-        videoHeight = window.innerWidth / videoAspectRatio;
+        videoWidth = window.innerWidth;  // Set width to window's width
+        videoHeight = window.innerWidth / videoAspectRatio;  // Adjust height accordingly
     }
 
     // Atur ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi
