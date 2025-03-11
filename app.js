@@ -3,8 +3,11 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-canvasElement.width = 480;
-canvasElement.height = 480;
+// Atur ukuran kanvas dan video berdasarkan ukuran layar perangkat
+canvasElement.width = window.innerWidth;
+canvasElement.height = window.innerHeight;
+videoElement.width = window.innerWidth;
+videoElement.height = window.innerHeight;
 
 let previousLandmarks = null;
 
@@ -84,8 +87,8 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: 480,
-    height: 480,
+    width: window.innerWidth,
+    height: window.innerHeight,
     facingMode: "environment"
 });
 camera.start();
