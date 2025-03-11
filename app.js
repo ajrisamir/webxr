@@ -136,7 +136,6 @@ function resizeCanvas() {
     canvasElement.style.left = `${(window.innerWidth - canvasWidth) / 2}px`;
     canvasElement.style.top = `${(window.innerHeight - canvasHeight) / 2}px`;
 }
-
 window.addEventListener('resize', () => {
     if (videoElement.videoWidth && videoElement.videoHeight) {
         resizeCanvas();
