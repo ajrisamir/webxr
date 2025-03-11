@@ -113,6 +113,7 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1; // Adjust for high-DPI screens
     if (!videoElement.videoWidth || !videoElement.videoHeight) {
         return;
     }
