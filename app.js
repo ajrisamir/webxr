@@ -5,15 +5,25 @@ const modelEntity = document.getElementById('model');
 
 // Fungsi untuk menyesuaikan ukuran video dan kanvas agar sesuai dengan layar tanpa distorsi dan tanpa ruang kosong
 function resizeElements() {
-    videoElement.style.position = 'fixed';
-    videoElement.style.top = '0';
-    videoElement.style.left = '0';
-    videoElement.style.width = '100vw';
-    videoElement.style.height = '100vh';
-    videoElement.style.objectFit = 'cover';
-    
+    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+    const windowAspectRatio = window.innerWidth / window.innerHeight;
+
+    // Tentukan dimensi video dan canvas
+    if (videoAspectRatio > windowAspectRatio) {
+        // Jika video lebih lebar dari layar, sesuaikan lebar video
+        videoElement.style.width = '100vw';
+        videoElement.style.height = 'auto'; // Menjaga proporsi tinggi
+    } else {
+        // Jika video lebih tinggi dari layar, sesuaikan tinggi video
+        videoElement.style.height = '100vh';
+        videoElement.style.width = 'auto'; // Menjaga proporsi lebar
+    }
+
+    // Sesuaikan ukuran canvas
     canvasElement.width = window.innerWidth;
     canvasElement.height = window.innerHeight;
+
+    // Posisi tetap di layar
     canvasElement.style.position = 'fixed';
     canvasElement.style.top = '0';
     canvasElement.style.left = '0';
@@ -45,6 +55,18 @@ function smoothLandmarks(landmarks) {
     return smoothedLandmarks;
 }
 
+// Sesuaikan koordinat landmark berdasarkan ukuran video dan canvas
+function adjustLandmarksForCanvas(landmarks) {
+    const videoWidth = videoElement.videoWidth;
+    const videoHeight = videoElement.videoHeight;
+
+    return landmarks.map((landmark) => {
+        const adjustedX = landmark.x * window.innerWidth / videoWidth;
+        const adjustedY = landmark.y * window.innerHeight / videoHeight;
+        return { x: adjustedX, y: adjustedY, z: landmark.z };
+    });
+}
+
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -53,13 +75,14 @@ function onResults(results) {
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
             const smoothedLandmarks = smoothLandmarks(landmarks);
+            const adjustedLandmarks = adjustLandmarksForCanvas(smoothedLandmarks);
 
-            drawConnectors(canvasCtx, smoothedLandmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
-            drawLandmarks(canvasCtx, smoothedLandmarks, { color: '#FF0000', lineWidth: 2 });
+            drawConnectors(canvasCtx, adjustedLandmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+            drawLandmarks(canvasCtx, adjustedLandmarks, { color: '#FF0000', lineWidth: 2 });
 
-            if (smoothedLandmarks[8] && smoothedLandmarks[4]) {
-                const indexFinger = smoothedLandmarks[8];
-                const thumb = smoothedLandmarks[4];
+            if (adjustedLandmarks[8] && adjustedLandmarks[4]) {
+                const indexFinger = adjustedLandmarks[8];
+                const thumb = adjustedLandmarks[4];
 
                 const distance = Math.sqrt(
                     Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
