@@ -3,49 +3,11 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-// Fungsi untuk menyelaraskan ukuran video dengan ukuran canvas tanpa distorsi
-function setVideoSize() {
-    const videoAspect = videoElement.videoWidth / videoElement.videoHeight; // Rasio aspek video
-    const canvasAspect = canvasElement.width / canvasElement.height; // Rasio aspek canvas
-
-    let videoWidth, videoHeight;
-
-    // Menyesuaikan ukuran video dengan ukuran canvas tanpa distorsi
-    if (canvasAspect > videoAspect) {
-        // Jika canvas lebih lebar dari rasio video, sesuaikan tinggi video
-        videoHeight = canvasElement.height;
-        videoWidth = videoHeight * videoAspect;
-    } else {
-        // Jika canvas lebih tinggi dari rasio video, sesuaikan lebar video
-        videoWidth = canvasElement.width;
-        videoHeight = videoWidth / videoAspect;
-    }
-
-    // Mengatur ukuran video
-    videoElement.style.width = `${videoWidth}px`;
-    videoElement.style.height = `${videoHeight}px`;
-
-    // Posisi video di tengah-tengah canvas
-    videoElement.style.position = 'absolute';
-    videoElement.style.top = `${(canvasElement.height - videoHeight) / 2}px`;
-    videoElement.style.left = `${(canvasElement.width - videoWidth) / 2}px`;
-}
-
-// Fungsi untuk mengatur ukuran video dan canvas
-function setVideoCanvasSize() {
-    // Menyelaraskan ukuran canvas dengan ukuran jendela perangkat
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
-
-    // Menyesuaikan ukuran video dengan canvas
-    setVideoSize();
-}
-
-// Atur ukuran saat pertama kali dimuat
-setVideoCanvasSize();
-
-// Mengatur ukuran saat jendela berubah
-window.addEventListener('resize', setVideoCanvasSize);
+// Atur ukuran kanvas dan video berdasarkan ukuran layar perangkat
+canvasElement.width = window.innerWidth;
+canvasElement.height = window.innerHeight;
+videoElement.width = window.innerWidth;
+videoElement.height = window.innerHeight;
 
 let previousLandmarks = null;
 
