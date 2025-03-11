@@ -43,21 +43,77 @@ function onResults(results) {
                 const indexFinger = smoothedLandmarks[8];
                 const thumb = smoothedLandmarks[4];
 
-                // Perbaikan koordinat A-Frame
+                const distance = Math.sqrt(
+                    Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
+                );
+
+                const scale = distance * 5;
+                modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
+
+                // Perbaikan koordinat posisi model di A-Frame
                 const aframeX = (indexFinger.x - 0.5) * 3;
                 const aframeY = -(indexFinger.y - 0.5) * 3;
                 modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
+
+                const rotationX = (thumb.y - indexFinger.y) * 180;
+                const rotationY = (thumb.x - indexFinger.x) * 180;
+                modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
             }
         }
     }
     canvasCtx.restore();
 }
 
-// Perbaikan fungsi resizeCanvas
+const hands = new Hands({
+    locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }
+});
+hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+});
+hands.onResults(onResults);
+
+const camera = new Camera(videoElement, {
+    onFrame: async () => {
+        await hands.send({ image: videoElement });
+    },
+    width: window.innerWidth,
+    height: window.innerHeight,
+    facingMode: "environment"
+});
+
+camera.start();
+
+camera.onCameraError = (error) => {
+    console.error("Error accessing camera:", error);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = 'Kamera tidak dapat diakses. Pastikan kamera terhubung dan izin diberikan.';
+    document.body.appendChild(errorDiv);
+};
+
+modelEntity.addEventListener('model-loaded', () => {
+    console.log("Model 3D berhasil dimuat!");
+});
+
+modelEntity.addEventListener('model-error', (error) => {
+    console.error("Error loading 3D model:", error);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = 'Gagal memuat model 3D. Periksa jalur file model.';
+    document.body.appendChild(errorDiv);
+});
+
+// Perbaikan resizeCanvas agar menjaga aspek rasio dengan benar
 function resizeCanvas() {
     canvasElement.width = window.innerWidth;
     canvasElement.height = window.innerHeight;
 }
 
 window.addEventListener('resize', resizeCanvas);
+
 videoElement.addEventListener('loadedmetadata', resizeCanvas);
