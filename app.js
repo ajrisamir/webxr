@@ -8,9 +8,9 @@ let previousScale = null;
 let previousPosition = null;
 
 videoElement.addEventListener('loadedmetadata', () => {
-    // Menghapus pengaturan ukuran video
-    // videoElement.width = videoElement.videoWidth;
-    // videoElement.height = videoElement.videoHeight;
+    // Mengatur ukuran video menjadi lebar 480 dan tinggi 720
+    videoElement.width = 480;
+    videoElement.height = 720;
 });
 
 function lerp(a, b, t) {
