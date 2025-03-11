@@ -81,8 +81,8 @@ const camera = new Camera(videoElement, {
     onFrame: async () => {
         await hands.send({ image: videoElement });
     },
-    width: window.innerWidth, // Sesuaikan lebar kamera
-    height: window.innerHeight, // Sesuaikan tinggi kamera
+    width: window.innerWidth,
+    height: window.innerHeight,
     facingMode: "environment"
 });
 
@@ -109,18 +109,26 @@ modelEntity.addEventListener('model-error', (error) => {
 });
 
 function resizeCanvas() {
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
+    const videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+    const screenAspectRatio = window.innerWidth / window.innerHeight;
 
-    videoElement.width = window.innerWidth;
-    videoElement.height = window.innerHeight;
-
-    camera.width = window.innerWidth;
-    camera.height = window.innerHeight;
+    if (videoAspectRatio > screenAspectRatio) {
+        canvasElement.width = window.innerWidth;
+        canvasElement.height = window.innerWidth / videoAspectRatio;
+    } else {
+        canvasElement.width = window.innerHeight * videoAspectRatio;
+        canvasElement.height = window.innerHeight;
+    }
 }
 
 window.addEventListener('resize', () => {
-    resizeCanvas();
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
 });
 
-resizeCanvas();
+videoElement.addEventListener('loadedmetadata', () => {
+    if (videoElement.videoWidth && videoElement.videoHeight) {
+        resizeCanvas();
+    }
+});
