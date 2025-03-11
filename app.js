@@ -7,24 +7,13 @@ const modelEntity = document.getElementById('model');
 function resizeElements() {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-    const videoRatio = videoElement.videoWidth / videoElement.videoHeight;
-    const windowRatio = windowWidth / windowHeight;
-
-    let videoWidth, videoHeight;
-    if (windowRatio > videoRatio) {
-        videoWidth = windowWidth;
-        videoHeight = windowWidth / videoRatio;
-    } else {
-        videoHeight = windowHeight;
-        videoWidth = windowHeight * videoRatio;
-    }
-
+    
     videoElement.style.position = 'fixed';
-    videoElement.style.top = '50%';
-    videoElement.style.left = '50%';
-    videoElement.style.width = `${videoWidth}px`;
-    videoElement.style.height = `${videoHeight}px`;
-    videoElement.style.transform = 'translate(-50%, -50%)';
+    videoElement.style.top = '0';
+    videoElement.style.left = '0';
+    videoElement.style.width = '100vw';
+    videoElement.style.height = '100vh';
+    videoElement.style.objectFit = 'cover';
 
     canvasElement.width = windowWidth;
     canvasElement.height = windowHeight;
@@ -44,19 +33,14 @@ function smoothLandmarks(landmarks) {
         return landmarks;
     }
 
-    const smoothedLandmarks = landmarks.map((landmark, index) => {
-        const previousLandmark = previousLandmarks[index];
-        if (!previousLandmark) return landmark;
-
-        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
-        const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
-        const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
-
-        return { x: smoothedX, y: smoothedY, z: smoothedZ };
+    return landmarks.map((landmark, index) => {
+        const previousLandmark = previousLandmarks[index] || landmark;
+        return {
+            x: landmark.x * 0.3 + previousLandmark.x * 0.7,
+            y: landmark.y * 0.3 + previousLandmark.y * 0.7,
+            z: landmark.z * 0.3 + previousLandmark.z * 0.7
+        };
     });
-
-    previousLandmarks = smoothedLandmarks;
-    return smoothedLandmarks;
 }
 
 function onResults(results) {
@@ -75,22 +59,14 @@ function onResults(results) {
                 const indexFinger = smoothedLandmarks[8];
                 const thumb = smoothedLandmarks[4];
 
-                const distance = Math.sqrt(
-                    Math.pow(indexFinger.x - thumb.x, 2) + Math.pow(indexFinger.y - thumb.y, 2)
-                );
-
+                const distance = Math.hypot(indexFinger.x - thumb.x, indexFinger.y - thumb.y);
                 const scale = distance * 5;
                 modelEntity.setAttribute('scale', `${scale} ${scale} ${scale}`);
 
-                const aframeX = (indexFinger.x - 0.5) * 2;
-                const aframeY = -(indexFinger.y - 0.5) * 2;
+                const aframeX = (indexFinger.x - 0.5) * 3;
+                const aframeY = -(indexFinger.y - 0.5) * 3;
 
-                modelEntity.setAttribute('position', `${aframeX} ${aframeY} 0`);
-
-                const rotationX = (thumb.y - indexFinger.y) * 180;
-                const rotationY = (thumb.x - indexFinger.x) * 180;
-
-                modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
+                modelEntity.setAttribute('position', `${aframeX} ${aframeY} -3`);
             }
         }
     }
@@ -99,9 +75,7 @@ function onResults(results) {
 }
 
 const hands = new Hands({
-    locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-    }
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
 
 hands.setOptions({
