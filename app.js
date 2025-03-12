@@ -8,6 +8,42 @@ function adjustVideoCanvasSize() {
     const width = window.innerWidth;  // Lebar layar
     const height = window.innerHeight;  // Tinggi layar
 
+    // Set lebar dan tinggi video agar sesuai dengan layar
+    videoElement.width = width;
+    videoElement.height = height;
+
+    // Menyesuaikan video agar memenuhi layar sepenuhnya (menggunakan scale dan aspek rasio)
+    videoElement.style.position = 'absolute';
+    videoElement.style.top = '0';
+    videoElement.style.left = '0';
+    
+    // Memastikan video selalu memenuhi layar
+    const videoRatio = videoElement.videoWidth / videoElement.videoHeight;
+    const screenRatio = width / height;
+
+    if (videoRatio < screenRatio) {
+        // Video lebih lebar dibandingkan layar, sesuaikan tinggi dan lebar
+        videoElement.style.height = '100%';
+        videoElement.style.width = 'auto';
+    } else {
+        // Video lebih tinggi dibandingkan layar, sesuaikan lebar dan tinggi
+        videoElement.style.width = '100%';
+        videoElement.style.height = 'auto';
+    }
+
+    // Menyesuaikan canvas agar sesuai dengan ukuran video
+    canvasElement.width = videoElement.width;
+    canvasElement.height = videoElement.height;
+}
+
+window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
+adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
+
+// Set video dan canvas agar menyesuaikan dengan ukuran layar ponsel
+/*function adjustVideoCanvasSize() {
+    const width = window.innerWidth;  // Lebar layar
+    const height = window.innerHeight;  // Tinggi layar
+
     videoElement.width = width;
     videoElement.height = height;
 
@@ -16,7 +52,7 @@ function adjustVideoCanvasSize() {
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
-adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
+adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat*/
 
 let previousLandmarks = null;
 let previousScale = null;
