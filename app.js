@@ -1,3 +1,23 @@
+const videoElement = document.getElementById('video');
+const canvasElement = document.getElementById('output_canvas');
+const canvasCtx = canvasElement.getContext('2d');
+const modelEntity = document.getElementById('model');
+
+// Set video dan canvas agar menyesuaikan dengan ukuran layar ponsel
+function adjustVideoCanvasSize() {
+    const width = window.innerWidth;  // Lebar layar
+    const height = window.innerHeight;  // Tinggi layar
+
+    videoElement.width = width;
+    videoElement.height = height;
+
+    canvasElement.width = width;
+    canvasElement.height = height;
+}
+
+window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
+adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
+
 let previousLandmarks = null;
 let previousScale = null;
 let previousPosition = null;
