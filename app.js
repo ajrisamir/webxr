@@ -4,27 +4,28 @@ const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
 // Set video dan canvas agar menyesuaikan dengan ukuran layar ponsel
-function adjustVideoCanvasSize() {
-    const width = window.innerWidth;  // Lebar layar
-    const height = window.innerHeight;  // Tinggi layar
+tfunction adjustVideoCanvasSize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
 
     videoElement.width = width;
     videoElement.height = height;
 
-    canvasElement.width = width;
-    canvasElement.height = height;
+    canvasElement.width = width * dpr;
+    canvasElement.height = height * dpr;
+    canvasCtx.scale(dpr, dpr);
 }
 
-window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
-adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
+window.addEventListener('resize', adjustVideoCanvasSize);
+adjustVideoCanvasSize();
 
 let previousLandmarks = null;
 let previousScale = null;
 let previousPosition = null;
 let handLostFrames = 0;
-const maxLostFrames = 10; // Sembunyikan setelah 10 frame tanpa tangan
+const maxLostFrames = 10;
 
-// Fungsi untuk melakukan smoothing pada landmarks tangan
 function smoothLandmarks(landmarks) {
     if (!previousLandmarks) {
         previousLandmarks = landmarks;
@@ -35,23 +36,21 @@ function smoothLandmarks(landmarks) {
         const previousLandmark = previousLandmarks[index];
         if (!previousLandmark) return landmark;
 
-        const smoothedX = landmark.x * 0.3 + previousLandmark.x * 0.7;
-        const smoothedY = landmark.y * 0.3 + previousLandmark.y * 0.7;
-        const smoothedZ = landmark.z * 0.3 + previousLandmark.z * 0.7;
-
-        return { x: smoothedX, y: smoothedY, z: smoothedZ };
+        return {
+            x: landmark.x * 0.3 + previousLandmark.x * 0.7,
+            y: landmark.y * 0.3 + previousLandmark.y * 0.7,
+            z: landmark.z * 0.3 + previousLandmark.z * 0.7
+        };
     });
 
     previousLandmarks = smoothedLandmarks;
     return smoothedLandmarks;
 }
 
-// Fungsi untuk menghitung linear interpolation (lerp)
 function lerp(a, b, t) {
     return a * (1 - t) + b * t;
 }
 
-// Fungsi untuk mengatur posisi, skala, dan rotasi model berdasarkan hasil tracking
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -100,21 +99,11 @@ function onResults(results) {
             previousPosition = { x: smoothX, y: smoothY, z: smoothZ };
 
             modelEntity.setAttribute('position', `${smoothX} ${smoothY} ${smoothZ}`);
-
-            const deltaX = thumb.x - indexFinger.x;
-            const deltaY = thumb.y - indexFinger.y;
-            const deltaZ = thumb.z - indexFinger.z;
-
-            const rotationX = Math.atan2(deltaY, deltaZ) * (180 / Math.PI);
-            const rotationY = Math.atan2(deltaX, deltaZ) * (180 / Math.PI);
-
-            modelEntity.setAttribute('rotation', `${rotationX} ${rotationY} 0`);
         }
     }
     canvasCtx.restore();
 }
 
-// Setup MediaPipe Hands
 const hands = new Hands({
     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
@@ -126,21 +115,22 @@ hands.setOptions({
 });
 hands.onResults(onResults);
 
-// Setup Kamera untuk menangkap video
-ttry {
-    const camera = new Camera(videoElement, {
-        onFrame: async () => {
-            await hands.send({ image: videoElement });
-        },
-        facingMode: "environment"
-    });
+const camera = new Camera(videoElement, {
+    onFrame: async () => {
+        await hands.send({ image: videoElement });
+    },
+    facingMode: "environment"
+});
+
+try {
     camera.start();
 } catch (err) {
     console.error("Error starting camera:", err);
     alert("Gagal mengakses kamera. Pastikan izin telah diberikan.");
 }
 
-// Event listener untuk model 3D
+videoElement.style.objectFit = 'cover';
+
 modelEntity.addEventListener('model-loaded', () => {
     console.log("Model 3D berhasil dimuat!");
 });
