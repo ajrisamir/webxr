@@ -13,13 +13,6 @@ function adjustVideoCanvasSize() {
 
     canvasElement.width = width;
     canvasElement.height = height;
-
-    // Pastikan video memenuhi layar tanpa ruang kosong di bagian bawah
-    videoElement.style.position = 'absolute';
-    videoElement.style.top = '0';
-    videoElement.style.left = '0';
-    videoElement.style.width = '100%';
-    videoElement.style.height = '100%';
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
