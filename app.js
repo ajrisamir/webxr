@@ -9,7 +9,7 @@ function adjustVideoCanvasSize() {
     const height = window.innerHeight;  // Tinggi layar
 
     videoElement.width = width;
-    videoElement.height = 110%;
+    videoElement.height = height;
 
     canvasElement.width = width;
     canvasElement.height = height;
