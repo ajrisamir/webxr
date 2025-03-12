@@ -15,17 +15,8 @@ function adjustVideoCanvasSize() {
     canvasElement.height = height;
 }
 
-function forceFitVideo() {
-    videoElement.style.width = `${window.innerWidth}px`;
-    videoElement.style.height = `${window.innerHeight}px`;
-}
-
-window.addEventListener('resize', forceFitVideo);
-forceFitVideo();
-
-
-//window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
-//adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
+window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
+adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
 
 let previousLandmarks = null;
 let previousScale = null;
