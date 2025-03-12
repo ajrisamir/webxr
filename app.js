@@ -3,17 +3,8 @@ const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 const modelEntity = document.getElementById('model');
 
-function adjustVideoHeight() {
-    const screenHeight = window.innerHeight;
-    videoElement.style.height = `${screenHeight}px`;
-    videoElement.style.width = 'auto'; // Agar rasio lebar tetap terjaga
-}
-
-window.addEventListener('resize', adjustVideoHeight);
-adjustVideoHeight(); // Pertama kali dijalankan saat halaman dimuat
-
 // Set video dan canvas agar menyesuaikan dengan ukuran layar ponsel
-/*function adjustVideoCanvasSize() {
+function adjustVideoCanvasSize() {
     const width = window.innerWidth;  // Lebar layar
     const height = window.innerHeight;  // Tinggi layar
 
@@ -25,7 +16,7 @@ adjustVideoHeight(); // Pertama kali dijalankan saat halaman dimuat
 }
 
 window.addEventListener('resize', adjustVideoCanvasSize); // Menyesuaikan saat ukuran layar berubah
-adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat*/
+adjustVideoCanvasSize(); // Pertama kali dijalankan saat halaman dimuat
 
 let previousLandmarks = null;
 let previousScale = null;
